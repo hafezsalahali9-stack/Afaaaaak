@@ -5,9 +5,14 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// قراءة المفاتيح بأمان تام من إعدادات السيرفر (Render Environment)
+// قراءة المفاتيح بأمان من متغيرات بيئة السيرفر (Render Environment)
 const ELEVEN_API_KEY = (process.env.ELEVEN_API_KEY || "").trim();
-const REPLICATE_API_TOKEN = (process.env.REPLICATE_API_TOKEN || "").trim();
+let rawReplicate = (process.env.REPLICATE_API_TOKEN || "").trim();
+
+if (rawReplicate.startsWith('R8_')) {
+  rawReplicate = 'r8_' + rawReplicate.slice(3);
+}
+const REPLICATE_API_TOKEN = rawReplicate;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
