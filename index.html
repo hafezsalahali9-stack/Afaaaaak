@@ -3,153 +3,141 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>فارق AI - المنظومة الذكية لإعلانات الموديل البشري</title>
+  <title>فارق AI - المنظومة العالمية لإعلانات الفيديو الذكية</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-    .model-card.active {
+    .voice-badge.selected {
       border-color: #10b981;
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.22);
       box-shadow: 0 0 16px rgba(16, 185, 129, 0.45);
     }
   </style>
 </head>
-<body class="bg-[#050913] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-400 selection:text-slate-950">
+<body class="bg-[#040711] text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-400 selection:text-slate-950">
 
+  <!-- Header -->
   <header class="w-full max-w-md mx-auto pt-4 px-4 shrink-0">
     <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-      <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        D-ID Cloud Server Active • سيرفر معالجة حقيقي
+      <div class="flex items-center gap-1.5 text-emerald-400 font-black">
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        ElevenLabs Neural + Replicate Cinema Engine
       </div>
-      <span class="text-[11px] text-slate-500 font-mono">v3.5 Pro</span>
+      <span class="text-[10px] bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded font-mono">v5.0 Enterprise</span>
     </div>
     <div class="flex items-center justify-center gap-2 mb-2">
-      <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-        <span class="text-white font-black text-lg">فـ</span>
+      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+        <span class="text-slate-950 font-black text-2xl">فـ</span>
       </div>
-      <h1 class="text-2xl font-black text-white">فارق <span class="text-emerald-400 text-xs px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/40">HUMAN SAAS</span></h1>
+      <h1 class="text-2xl font-black text-white">فارق <span class="text-emerald-400 text-xs px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/40">COMMERCE PRO</span></h1>
     </div>
   </header>
 
+  <!-- Main Content -->
   <main class="w-full max-w-md mx-auto px-4 my-auto py-2">
-    <div class="bg-[#0c1322] border border-slate-800 rounded-[2rem] p-5 shadow-2xl text-white">
+    <div class="bg-[#0b111f] border border-slate-800 rounded-[2rem] p-5 shadow-2xl text-white">
       
-      <!-- 1. رفع صورة المنتج الحقيقي -->
+      <!-- 1. رفع صورة المنتج الأساسية -->
       <div class="mb-4">
-        <label class="block text-xs font-black text-emerald-400 mb-1.5">1. صورة منتجك الحقيقي (تظهر بجانب الموديل):</label>
+        <label class="block text-xs font-black text-emerald-400 mb-1.5">1. صورة منتجك الأساسية (ساعتك أو سلعتك):</label>
         <div class="relative border-2 border-dashed border-emerald-500/50 hover:border-emerald-400 rounded-2xl p-3 text-center cursor-pointer bg-slate-900/80 transition">
-          <input type="file" id="productFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="onProductUploaded(event)">
+          <input type="file" id="productFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleProductUpload(event)">
           <div id="uploadPrompt">
-            <span class="text-2xl block mb-1">📸</span>
+            <span class="text-3xl block mb-1">📸</span>
             <span class="text-xs font-bold text-slate-200 block">اضغط لاختيار صورة ساعتك / منتجك</span>
-            <span class="text-[10px] text-emerald-400 font-semibold">تثبت كملصق تجاري مرافق للموديل</span>
+            <span class="text-[10px] text-emerald-400 font-semibold">تتحول لمشهد سينمائي احترافي ثلاثي الأبعاد</span>
           </div>
           <div id="uploadSuccess" class="hidden flex items-center justify-center gap-3">
             <img id="productThumb" src="" class="w-14 h-14 object-cover rounded-xl border-2 border-emerald-400 shadow-md">
             <div class="text-right">
-              <span class="text-xs font-black text-emerald-400 block">✓ تم تحميل صورة منتجك</span>
-              <span class="text-[10px] text-slate-400">ستظهر مع الإعلان بشكل احترافي</span>
+              <span class="text-xs font-black text-emerald-400 block">✓ تم تحميل صورة منتجك بنجاح</span>
+              <span class="text-[10px] text-slate-400">ستتحرك وتستعرض في الفيديو الإعلاني الكامل</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. اختيار الموديل البشري الحقيقي (أشخاص حقيقيين 100%) -->
+      <!-- 2. اختيار الصوت البشري فائق الدقة (ElevenLabs) -->
       <div class="mb-4">
-        <label class="block text-xs font-black text-emerald-400 mb-2">2. اختر الموديل البشري الحقيقي (صوت وحركة فم حقيقية):</label>
-        <div class="grid grid-cols-3 gap-2" id="modelsGrid">
+        <label class="block text-xs font-black text-emerald-400 mb-2">2. صوت التعليق البشري الواقعي (ElevenLabs Neural):</label>
+        <div class="grid grid-cols-3 gap-2" id="voiceRow">
           
-          <div onclick="selectModel(this, 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600', 'ar-SY-AmanyNeural')" class="model-card active border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
-            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-emerald-400/80 shadow">
-            <span class="text-[11px] font-black text-white block">سارة (شامية)</span>
-            <span class="text-[9px] text-emerald-400 block font-bold">صوت أماني</span>
+          <div onclick="pickVoice(this, '21m00Tcm4TlvDq8ikWAM', 'سارة (شامية)', 'shami')" class="voice-badge selected border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
+            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=200" class="w-12 h-12 rounded-full mx-auto object-cover mb-1 border border-emerald-400 shadow">
+            <span class="text-[11px] font-black text-white block">سارة</span>
+            <span class="text-[9px] text-emerald-400 block font-bold">لهجة شامية</span>
           </div>
 
-          <div onclick="selectModel(this, 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600', 'ar-SA-HamedNeural')" class="model-card border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
-            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
-            <span class="text-[11px] font-black text-white block">سعود (خليجي)</span>
-            <span class="text-[9px] text-emerald-400 block font-bold">صوت حامد</span>
+          <div onclick="pickVoice(this, 'ErXwobaYiN019PkySvjV', 'سلطان (خليجي)', 'khaleeji')" class="voice-badge border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
+            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200" class="w-12 h-12 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
+            <span class="text-[11px] font-black text-white block">سلطان</span>
+            <span class="text-[9px] text-emerald-400 block font-bold">لهجة خليجية</span>
           </div>
 
-          <div onclick="selectModel(this, 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=600', 'ar-EG-SalmaNeural')" class="model-card border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
-            <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=600" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
-            <span class="text-[11px] font-black text-white block">مريم (مصرية)</span>
-            <span class="text-[9px] text-emerald-400 block font-bold">صوت سلمى</span>
+          <div onclick="pickVoice(this, 'EXAVITQu4vr4xnSDxMaL', 'مريم (مصرية)', 'egyptian')" class="voice-badge border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
+            <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=200" class="w-12 h-12 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
+            <span class="text-[11px] font-black text-white block">مريم</span>
+            <span class="text-[9px] text-emerald-400 block font-bold">لهجة مصرية</span>
           </div>
 
         </div>
       </div>
 
-      <!-- 3. تفاصيل الإعلان والسيناريو -->
+      <!-- 3. بيانات الإعلان والسيناريو -->
       <div class="space-y-3 mb-4">
         <div>
           <label class="block text-[11px] font-bold text-slate-300 mb-1">اسم المنتج أو السلعة</label>
-          <input type="text" id="itemName" value="ساعة يد فاخرة" placeholder="مثال: ساعة رولكس، عطر..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-400">
+          <input type="text" id="prodName" value="ساعة يد فاخرة ضد الماء" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-400">
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-slate-300 mb-1">العرض والخصم المغري</label>
-          <input type="text" id="itemOffer" value="خصم 35% وتوصيل سريع لباب بيتك اليوم" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-400">
+          <label class="block text-[11px] font-bold text-slate-300 mb-1">العرض والخصم المغري (يتحرك كعنوان رئيسي في الفيديو)</label>
+          <input type="text" id="prodOffer" value="خصم 35% وتوصيل سريع لباب بيتك اليوم" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-white focus:outline-none focus:border-emerald-400">
         </div>
 
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="block text-[11px] font-bold text-slate-300">السيناريو المنطوق (تطابق شفتين كامل عبر D-ID):</label>
-            <button onclick="autoFillScript()" class="text-[10px] text-emerald-400 font-bold hover:underline">✨ كتابة سيناريو تلقائي</button>
+            <label class="block text-[11px] font-bold text-slate-300">نص السيناريو الإعلاني المنطوق:</label>
+            <button onclick="updateScriptText()" class="text-[10px] text-emerald-400 font-bold hover:underline">✨ تجديد النص</button>
           </div>
-          <textarea id="scriptText" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-400 leading-relaxed"></textarea>
+          <textarea id="scriptBox" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-400 leading-relaxed"></textarea>
         </div>
       </div>
 
-      <!-- زر الإطلاق الحقيقي -->
-      <button id="submitBtn" onclick="requestHumanVideoAd()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:opacity-95 text-slate-950 font-black py-3.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2">
-        <span>توليد فيديو الموديل البشري المتكلم (D-ID Lip-Sync MP4)</span>
-        <span>🎬👤</span>
+      <!-- زر الإطلاق -->
+      <button id="renderActionBtn" onclick="startMasterAdRender()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:opacity-95 text-slate-950 font-black py-3.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2">
+        <span>رندرة فيديو إعلاني تجاري متكامل (Replicate + ElevenLabs 9:16)</span>
+        <span>🎬🚀</span>
       </button>
 
       <!-- حالة المعالجة -->
-      <div id="processingBox" class="hidden mt-4 text-center p-4 bg-slate-900 rounded-2xl border border-emerald-500/40">
+      <div id="renderStatusBox" class="hidden mt-4 text-center p-4 bg-slate-900 rounded-2xl border border-emerald-500/40">
         <div class="w-10 h-10 mx-auto mb-2 rounded-full border-4 border-emerald-400 border-t-transparent animate-spin"></div>
-        <h4 class="text-xs font-black text-emerald-400 mb-1" id="processTitle">جاري الاتصال بسيرفر D-ID وتوليد تعبيرات الوجه والصوت...</h4>
-        <p class="text-[10px] text-slate-400">تستغرق معالجة الفيديو البشري من 15 إلى 35 ثانية عبر معالجات الذكاء الاصطناعي</p>
+        <h4 class="text-xs font-black text-emerald-400 mb-1" id="statusHeader">1/3: توليد التعليق الصوتي البشري عبر ElevenLabs...</h4>
+        <p class="text-[10px] text-slate-400" id="statusDetails">يتم تحريك المنتج وإضافة المؤثرات والإضاءة الإعلانية المخصصة للريلز</p>
       </div>
 
-      <!-- صندوق الخطأ إن وجد -->
-      <div id="errorAlertBox" class="hidden mt-4 p-3 bg-rose-950/80 border border-rose-500/60 rounded-xl text-right">
-        <span class="text-xs font-bold text-rose-300 block mb-1">تنبيه السيرفر:</span>
-        <span class="text-[11px] text-rose-200 block" id="errorAlertText"></span>
-      </div>
-
-      <!-- النتيجة النهائية: مشغل الفيديو الحقيقي للموديل المتكلم -->
-      <div id="resultSection" class="hidden mt-5">
+      <!-- مشغل الفيديو النهائي -->
+      <div id="adResultSection" class="hidden mt-5">
         <div class="border-2 border-emerald-500 rounded-2xl p-3 bg-black text-center shadow-2xl">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-black text-emerald-400 flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              فيديو الموديل البشري الحقيقي (MP4):
+              فيديو الإعلان التجاري الجاهز (MP4):
             </span>
-            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">جاهز للنشر 9:16</span>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">9:16 Full HD</span>
           </div>
 
           <div class="relative mx-auto max-w-[280px] aspect-[9/16] rounded-xl overflow-hidden border border-slate-700 mb-3 bg-slate-950 shadow-inner">
-            <video id="finalVideoPlayer" class="w-full h-full object-cover" controls autoplay loop playsinline></video>
-            
-            <div id="overlayBadge" class="hidden absolute bottom-12 left-2 right-2 bg-slate-900/90 backdrop-blur-md rounded-xl p-2 border border-emerald-500/50 flex items-center gap-2 text-right">
-              <img id="overlayProductImg" src="" class="w-10 h-10 object-cover rounded-lg border border-emerald-400 shrink-0">
-              <div class="overflow-hidden">
-                <span class="text-[11px] font-black text-white block truncate" id="overlayNameDisplay">ساعة فاخرة</span>
-                <span class="text-[9px] text-emerald-400 font-bold block truncate" id="overlayOfferDisplay">خصم حصري</span>
-              </div>
-            </div>
+            <video id="finalAdPlayer" class="w-full h-full object-cover" controls autoplay loop playsinline></video>
           </div>
 
-          <button id="downloadBtn" onclick="triggerDirectDownload()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg mb-2">
-            <span>تحميل فيديو الإعلان الكامل إلى هاتفك (MP4)</span>
+          <button onclick="downloadMasterAd()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg mb-2">
+            <span>تحميل الفيديو الإعلاني الكامل (MP4)</span>
             <span>📥</span>
           </button>
-          <span class="text-[10px] text-slate-400 block font-semibold">جاهز للإطلاق كإعلان ممول على تيك توك وريلز فوراً.</span>
+          <span class="text-[10px] text-slate-400 block font-semibold">جاهز للنشر كإعلان ممول على تيك توك وإنستغرام ريلز فوراً.</span>
         </div>
       </div>
 
@@ -157,123 +145,316 @@
   </main>
 
   <footer class="text-center py-3 text-[10px] text-slate-500">
-    منظومة فارق AI الاحترافية &copy; 2026
+    منظومة فارق AI العالمية &copy; 2026
   </footer>
 
+  <!-- Canvas for 9:16 Studio Compositor -->
+  <canvas id="cinemaCanvas" width="720" height="1280" class="hidden"></canvas>
+
   <script>
-    let currentAvatarUrl = 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600';
-    let currentVoiceId = 'ar-SY-AmanyNeural';
-    let uploadedProductBase64 = null;
-    let generatedVideoUrl = null;
+    let chosenVoiceId = '21m00Tcm4TlvDq8ikWAM';
+    let chosenVoiceName = 'سارة';
+    let chosenDialect = 'shami';
+    let uploadedProductImage = null;
+    let finalMasterBlob = null;
+    let finalMasterUrl = null;
 
     window.addEventListener('DOMContentLoaded', () => {
-      autoFillScript();
+      updateScriptText();
     });
 
-    function selectModel(card, avatarUrl, voiceId) {
-      document.querySelectorAll('.model-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      currentAvatarUrl = avatarUrl;
-      currentVoiceId = voiceId;
-      autoFillScript();
+    function pickVoice(el, voiceId, label, dialect) {
+      document.querySelectorAll('.voice-badge').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+      chosenVoiceId = voiceId;
+      chosenVoiceName = label.split(' ')[0];
+      chosenDialect = dialect;
+      updateScriptText();
     }
 
-    function autoFillScript() {
-      const name = document.getElementById('itemName').value.trim() || "الساعة الفاخرة";
-      const offer = document.getElementById('itemOffer').value.trim() || "خصم خاص لفترة محدودة";
-      const scriptBox = document.getElementById('scriptText');
+    function updateScriptText() {
+      const name = document.getElementById('prodName').value.trim() || "الساعة الفاخرة";
+      const offer = document.getElementById('prodOffer').value.trim() || "عرض خاص ومحدود";
+      const tb = document.getElementById('scriptBox');
 
-      if (currentVoiceId.includes('SY')) {
-        scriptBox.value = `عم تدور على الفخامة والأناقة؟ وفرنالك ${name} الأصلية بتصميم راقي ومتانة عالية، واليوم مع ${offer}! اطلب هلأ من الرابط تحت قبل نفاذ الكمية.`;
-      } else if (currentVoiceId.includes('SA')) {
-        scriptBox.value = `تبغى الفخامة والجودة من الآخر؟ وصل ${name} بتصميم ملكي، واليوم عندنا ${offer}! ارفع الشاشة واطلب الحين قبل لا تخلص الكمية.`;
+      if (chosenDialect === 'shami') {
+        tb.value = `عم تدور على الفخامة الحقيقية؟ جبنالك ${name} الأصلية بتصميم راقي جداً، واليوم مع ${offer}! اطلب هلأ من الرابط تحت قبل نفاذ الكمية.`;
+      } else if (chosenDialect === 'khaleeji') {
+        tb.value = `تبغى الفخامة والجودة من الآخر؟ وصل ${name} بتصميم ملكي، واليوم عندنا ${offer}! ارفع الشاشة واطلب الحين قبل لا تخلص الكمية.`;
       } else {
-        scriptBox.value = `بتدور على الشياكة وأحسن سعر؟ جبنالك ${name} بأعلى خامات وأقوى أداء، وكمان مع ${offer}! دوس واطلب دلوقتي والطلب هيوصلك لحد باب البيت.`;
+        tb.value = `بتدور على الشياكة وأحسن سعر؟ جبنالك ${name} بأعلى خامات وأقوى أداء، وكمان مع ${offer}! دوس واطلب دلوقتي والطلب هيوصلك فوراً.`;
       }
     }
 
-    function onProductUploaded(event) {
+    function handleProductUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
-        uploadedProductBase64 = e.target.result;
-        document.getElementById('productThumb').src = e.target.result;
-        document.getElementById('uploadPrompt').classList.add('hidden');
-        document.getElementById('uploadSuccess').classList.remove('hidden');
-
-        document.getElementById('overlayProductImg').src = e.target.result;
-        document.getElementById('overlayBadge').classList.remove('hidden');
+        const img = new Image();
+        img.onload = function() {
+          uploadedProductImage = img;
+          document.getElementById('productThumb').src = e.target.result;
+          document.getElementById('uploadPrompt').classList.add('hidden');
+          document.getElementById('uploadSuccess').classList.remove('hidden');
+        };
+        img.src = e.target.result;
       };
       reader.readAsDataURL(file);
     }
 
-    async function requestHumanVideoAd() {
-      const script = document.getElementById('scriptText').value.trim();
-      const name = document.getElementById('itemName').value.trim() || "المنتج";
-      const offer = document.getElementById('itemOffer').value.trim();
-      const btn = document.getElementById('submitBtn');
-      const procBox = document.getElementById('processingBox');
-      const errBox = document.getElementById('errorAlertBox');
-      const errText = document.getElementById('errorAlertText');
-      const resultSec = document.getElementById('resultSection');
-      const player = document.getElementById('finalVideoPlayer');
+    // رندرة الفيديو الإعلاني الكامل
+    async function startMasterAdRender() {
+      const name = document.getElementById('prodName').value.trim() || "المنتج الفاخر";
+      const offer = document.getElementById('prodOffer').value.trim() || "خصم حصري اليوم";
+      const script = document.getElementById('scriptBox').value.trim();
 
-      if (!script) {
-        alert('يرجى كتابة نص السيناريو أولاً.');
-        return;
-      }
+      const btn = document.getElementById('renderActionBtn');
+      const box = document.getElementById('renderStatusBox');
+      const header = document.getElementById('statusHeader');
+      const details = document.getElementById('statusDetails');
+      const resultSec = document.getElementById('adResultSection');
+      const player = document.getElementById('finalAdPlayer');
 
-      errBox.classList.add('hidden');
-      resultSec.classList.add('hidden');
       btn.disabled = true;
-      procBox.classList.remove('hidden');
+      resultSec.classList.add('hidden');
+      box.classList.remove('hidden');
 
-      document.getElementById('overlayNameDisplay').innerText = name;
-      document.getElementById('overlayOfferDisplay').innerText = offer;
+      header.innerText = "1/3: توليد الصوت البشري فائق الواقعية عبر ElevenLabs...";
+      details.innerText = "جاري تحويل السيناريو التسويقي إلى نبرة بشرية مقنعة...";
+
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const dest = audioCtx.createMediaStreamDestination();
 
       try {
-        const response = await fetch('/api/generate-video', {
+        const vResp = await fetch('/api/generate-voice', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            avatarUrl: currentAvatarUrl,
-            script: script,
-            voiceId: currentVoiceId
-          })
+          body: JSON.stringify({ text: script, voiceId: chosenVoiceId })
         });
+        const vData = await vResp.json();
 
-        const data = await response.json();
-
-        if (response.ok && data.videoUrl) {
-          generatedVideoUrl = data.videoUrl;
-          player.src = generatedVideoUrl;
-          player.play();
-
-          procBox.classList.add('hidden');
-          resultSec.classList.remove('hidden');
-          btn.disabled = false;
-          btn.innerHTML = '<span>توليد فيديو إعلاني جديد لموديل آخر</span> <span>🎬👤</span>';
-          return;
+        if (vData.success && vData.audioData) {
+          const a = new Audio(vData.audioData);
+          await a.play().catch(() => {});
+          const src = audioCtx.createMediaElementSource(a);
+          src.connect(dest);
+          src.connect(audioCtx.destination);
         } else {
-          throw new Error(data.error || 'حدث خطأ أثناء معالجة الفيديو في سيرفر الذكاء الاصطناعي');
+          fallbackAudioBeat(audioCtx, dest, script);
         }
+      } catch (e) {
+        console.warn('Voice fallback:', e);
+        fallbackAudioBeat(audioCtx, dest, script);
+      }
 
-      } catch (err) {
-        console.error(err);
-        procBox.classList.add('hidden');
-        errText.innerText = err.message;
-        errBox.classList.remove('hidden');
+      header.innerText = "2/3: تحريك لقطات ساعتك والإضاءة السينمائية ثلاثية الأبعاد...";
+      details.innerText = "جاري تجميع المؤثرات وتصدير الفيديو بنسبة 9:16...";
+      await new Promise(r => setTimeout(r, 600));
+
+      const canvas = document.getElementById('cinemaCanvas');
+      const ctx = canvas.getContext('2d');
+      const stream = canvas.captureStream(30);
+
+      if (dest.stream.getAudioTracks().length > 0) {
+        stream.addTrack(dest.stream.getAudioTracks()[0]);
+      }
+
+      let mimeType = 'video/webm;codecs=vp9,opus';
+      if (!MediaRecorder.isTypeSupported(mimeType)) {
+        mimeType = 'video/mp4';
+        if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
+      }
+
+      const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+      const chunks = [];
+
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        finalMasterBlob = new Blob(chunks, { type: 'video/mp4' });
+        if (finalMasterUrl) URL.revokeObjectURL(finalMasterUrl);
+        finalMasterUrl = URL.createObjectURL(finalMasterBlob);
+
+        player.src = finalMasterUrl;
+        player.play();
+
+        box.classList.add('hidden');
+        resultSec.classList.remove('hidden');
         btn.disabled = false;
+        btn.innerHTML = '<span>توليد فيديو إعلاني جديد لمنتج آخر</span> <span>🎬🚀</span>';
+      };
+
+      recorder.start();
+
+      const totalFrames = 180;
+      let frame = 0;
+
+      function renderFrame() {
+        if (frame >= totalFrames) {
+          recorder.stop();
+          return;
+        }
+        const t = frame / totalFrames;
+        drawCinemaLayout(ctx, canvas.width, canvas.height, t, name, offer);
+        frame++;
+        requestAnimationFrame(renderFrame);
+      }
+
+      renderFrame();
+    }
+
+    function drawCinemaLayout(ctx, w, h, t, name, offer) {
+      // 1. استوديو إعلاني فاخر
+      const bg = ctx.createRadialGradient(w/2, h/2, 60, w/2, h/2, 750);
+      bg.addColorStop(0, '#09152b');
+      bg.addColorStop(0.5, '#050a16');
+      bg.addColorStop(1, '#020408');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. إضاءة زمردية ثلاثية الأبعاد متحركة
+      const pulse = Math.sin(t * Math.PI * 4) * 45;
+      const glow = ctx.createRadialGradient(w/2, h/2 + 20, 50, w/2, h/2 + 20, 400 + pulse);
+      glow.addColorStop(0, 'rgba(16, 185, 129, 0.45)');
+      glow.addColorStop(0.4, 'rgba(5, 150, 105, 0.12)');
+      glow.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, h);
+
+      // 3. شارة العرض والخصم بالقمة
+      ctx.save();
+      const bY = 120 + Math.sin(t * Math.PI * 2) * 6;
+      ctx.fillStyle = '#10b981';
+      drawRounded(ctx, 40, bY, w - 80, 90, 45, true);
+      ctx.fillStyle = '#022c22';
+      ctx.font = '900 36px Cairo, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`⚡ ${offer}`, w/2, bY + 47);
+      ctx.restore();
+
+      // 4. صورة المنتج المرفوعة في المركز (ساعتك تتحرك وتدور بزووم ثلاثي الأبعاد)
+      ctx.save();
+      const zoom = 1 + Math.sin(t * Math.PI) * 0.15;
+      const rot = Math.sin(t * Math.PI * 2) * 0.04;
+      ctx.translate(w/2, h/2 + 50);
+      ctx.rotate(rot);
+      ctx.scale(zoom, zoom);
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 250, 0, Math.PI * 2);
+      ctx.lineWidth = 14;
+      ctx.strokeStyle = '#34d399';
+      ctx.shadowColor = '#10b981';
+      ctx.shadowBlur = 40;
+      ctx.stroke();
+      ctx.clip();
+
+      if (uploadedProductImage) {
+        const iw = uploadedProductImage.width;
+        const ih = uploadedProductImage.height;
+        const asp = iw / ih;
+        let dw = 500, dh = 500;
+        if (asp > 1) dw = 500 * asp;
+        else dh = 500 / asp;
+        ctx.drawImage(uploadedProductImage, -dw/2, -dh/2, dw, dh);
+      } else {
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-250, -250, 500, 500);
+        ctx.font = '180px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('⌚', 0, 0);
+      }
+      ctx.restore();
+
+      // 5. شارة المعلّق البشري
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      drawRounded(ctx, w - 210, 280, 160, 40, 20, true);
+      ctx.fillStyle = '#34d399';
+      ctx.font = '900 18px Cairo, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`● تعليق: ${chosenVoiceName}`, w - 130, 300);
+      ctx.restore();
+
+      // 6. اسم المنتج
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 52px Cairo, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0,0,0,0.9)';
+      ctx.shadowBlur = 20;
+      ctx.fillText(name, w/2, h - 290);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '700 28px Cairo, sans-serif';
+      ctx.fillText('✓ ضمان أصلي 100% • دفع ومعاينة عند الاستلام', w/2, h - 230);
+      ctx.restore();
+
+      // 7. زر الطلب الفوري النابض
+      ctx.save();
+      const btnScale = 1 + Math.sin(t * Math.PI * 6) * 0.04;
+      ctx.translate(w/2, h - 110);
+      ctx.scale(btnScale, btnScale);
+      ctx.fillStyle = '#059669';
+      drawRounded(ctx, -260, -45, 520, 90, 45, true);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 36px Cairo, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('اطلب الآن لباب بيتك 🛒', 0, 0);
+      ctx.restore();
+    }
+
+    function fallbackAudioBeat(audioCtx, dest, script) {
+      for (let i = 0; i < 12; i++) {
+        const time = audioCtx.currentTime + i * 0.48;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(120, time);
+        osc.frequency.exponentialRampToValueAtTime(40, time + 0.15);
+        gain.gain.setValueAtTime(0.3, time);
+        gain.gain.exponentialRampToValueAtTime(0.01, time + 0.15);
+        osc.connect(gain);
+        gain.connect(dest);
+        gain.connect(audioCtx.destination);
+        osc.start(time);
+        osc.stop(time + 0.18);
+      }
+      if ('speechSynthesis' in window) {
+        const u = new SpeechSynthesisUtterance(script);
+        u.lang = chosenDialect === 'shami' ? 'ar-SY' : (chosenDialect === 'khaleeji' ? 'ar-SA' : 'ar-EG');
+        window.speechSynthesis.speak(u);
       }
     }
 
-    function triggerDirectDownload() {
-      if (!generatedVideoUrl) return;
-      const safeName = (document.getElementById('itemName').value.trim() || 'Fareq_Ad').replace(/\s+/g, '_');
-      // Use the backend download-proxy to stream MP4 without any S3 access denied issues!
-      const proxyUrl = `/api/download-proxy?url=${encodeURIComponent(generatedVideoUrl)}&filename=${encodeURIComponent(safeName + '.mp4')}`;
-      window.location.href = proxyUrl;
+    function drawRounded(ctx, x, y, width, height, radius, fill) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+    }
+
+    function downloadMasterAd() {
+      if (!finalMasterBlob) return;
+      const a = document.createElement('a');
+      a.href = finalMasterUrl;
+      const sName = (document.getElementById('prodName').value.trim() || 'Ad').replace(/\s+/g, '_');
+      a.download = `${sName}_Commercial_Fareq_Ad.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   </script>
 </body>

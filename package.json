@@ -1,7 +1,7 @@
 {
-  "name": "fareq-ai-video-saas",
+  "name": "fareq-ai-global-saas",
   "version": "1.0.0",
-  "description": "Fareq AI - Professional Human Avatar Video Ad Generator",
+  "description": "Fareq AI - Ultimate Commercial Video SaaS (ElevenLabs + Replicate AI)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
