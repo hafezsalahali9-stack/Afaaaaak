@@ -5,14 +5,8 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// قراءة المفاتيح بأمان من متغيرات بيئة السيرفر (Render Environment)
 const ELEVEN_API_KEY = (process.env.ELEVEN_API_KEY || "").trim();
-let rawReplicate = (process.env.REPLICATE_API_TOKEN || "").trim();
-
-if (rawReplicate.startsWith('R8_')) {
-  rawReplicate = 'r8_' + rawReplicate.slice(3);
-}
-const REPLICATE_API_TOKEN = rawReplicate;
+const REPLICATE_API_TOKEN = (process.env.REPLICATE_API_TOKEN || "").trim();
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -28,7 +22,7 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
     const { imageBase64, productName, offer, script, voiceId } = req.body;
 
     if (!REPLICATE_API_TOKEN) {
-      return res.status(500).json({ error: 'يرجى إضافة REPLICATE_API_TOKEN في إعدادات Environment على Render' });
+      return res.status(500).json({ error: 'يرجى إضافة REPLICATE_API_TOKEN في إعدادات Render' });
     }
     if (!imageBase64) {
       return res.status(400).json({ error: 'يرجى رفع صورة المنتج أولاً.' });
@@ -37,13 +31,13 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
       return res.status(400).json({ error: 'يرجى كتابة نص السيناريو.' });
     }
 
-    console.log(`[1/3] توليد التعليق الصوتي للمنتج: ${productName}...`);
-
+    // 1. توليد الصوت البشري فائق الواقعية عبر ElevenLabs
     let audioDataUri = null;
     if (ELEVEN_API_KEY) {
       try {
-        const selectedVoice = voiceId || '21m00Tcm4TlvDq8ikWAM';
-        const ttsResp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}`, {
+        // نستخدم أفضل الأصوات البشرية الداعمة للعربية بطبيعية مطلقة
+        const targetVoice = voiceId || 'nPczCjzI2devNBz1zQrb'; // صوت مذيع فخم
+        const ttsResp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${targetVoice}`, {
           method: 'POST',
           headers: {
             'xi-api-key': ELEVEN_API_KEY,
@@ -53,9 +47,9 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
             text: script,
             model_id: 'eleven_multilingual_v2',
             voice_settings: {
-              stability: 0.5,
-              similarity_boost: 0.85,
-              style: 0.25,
+              stability: 0.40,
+              similarity_boost: 0.90,
+              style: 0.45,
               use_speaker_boost: true
             }
           })
@@ -64,15 +58,17 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
         if (ttsResp.ok) {
           const audioBuf = await ttsResp.arrayBuffer();
           audioDataUri = `data:audio/mp3;base64,${Buffer.from(audioBuf).toString('base64')}`;
+        } else {
+          const errDetail = await ttsResp.json().catch(() => ({}));
+          console.warn('ElevenLabs Error:', errDetail);
         }
       } catch (e) {
         console.warn('TTS Warning:', e.message);
       }
     }
 
-    console.log(`[2/3] إرسال صورة المنتج إلى Replicate...`);
-
-    const videoPrompt = `Cinematic commercial video advertisement, professional model hands and person holding and showcasing this ${productName || 'luxury product'} directly to the camera, showcasing its high-end details in a luxury studio setting, soft dramatic lighting, smooth slow motion 4k commercial camera movement, realistic, lifelike, highly detailed.`;
+    // 2. توليد فيديو الموديل والمنتج عبر Replicate
+    const videoPrompt = `High-end commercial advertisement video, realistic human model elegantly presenting and showcasing ${productName || 'luxury product'} close-up to the camera, wearing it, smooth wrist rotation showing luxury reflections, modern cinematic lighting, 4k ultra-realistic studio commercial footage.`;
 
     const repResp = await fetch('https://api.replicate.com/v1/models/minimax/video-01/predictions', {
       method: 'POST',
@@ -91,20 +87,16 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
 
     let prediction = await repResp.json();
     if (!repResp.ok || prediction.error) {
-      console.error('Replicate error:', prediction);
       return res.status(repResp.status || 500).json({
-        error: prediction.detail || prediction.error || 'خطأ في استجابة Replicate',
+        error: prediction.detail || prediction.error || 'خطأ في توليد فيديو Replicate',
         details: prediction
       });
     }
 
-    console.log(`[3/3] معالجة الرندرة (ID: ${prediction.id})...`);
-
     let attempts = 0;
     while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && attempts < 60) {
-      await new Promise(resolve => setTimeout(resolve, 4000));
+      await new Promise(r => setTimeout(r, 4000));
       attempts++;
-
       const checkResp = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
         headers: { 'Authorization': `Bearer ${REPLICATE_API_TOKEN}` }
       });
@@ -121,10 +113,7 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
         offer: offer
       });
     } else {
-      return res.status(500).json({
-        error: prediction.error || 'فشلت معالجة الفيديو في Replicate.',
-        details: prediction
-      });
+      return res.status(500).json({ error: 'تعذر اكتمال رندرة الفيديو، يرجى المحاولة بصورة أخرى.' });
     }
 
   } catch (error) {
@@ -137,13 +126,11 @@ app.get('/api/download-proxy', async (req, res) => {
   try {
     const { url, filename } = req.query;
     if (!url) return res.status(400).send('No URL provided');
-
     const videoResp = await fetch(url);
     if (!videoResp.ok) return res.status(videoResp.status).send('Video fetch error');
 
-    res.setHeader('Content-Disposition', `attachment; filename="${filename || 'Product_Commercial_Ad.mp4'}"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename || 'Fareq_Ad.mp4'}"`);
     res.setHeader('Content-Type', 'video/mp4');
-
     const arrayBuffer = await videoResp.arrayBuffer();
     res.send(Buffer.from(arrayBuffer));
   } catch (err) {
@@ -152,5 +139,5 @@ app.get('/api/download-proxy', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server online on port ${PORT}`);
+  console.log(`Fareq Studio listening on port ${PORT}`);
 });
