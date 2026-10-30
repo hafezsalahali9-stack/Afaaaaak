@@ -1,13 +1,16 @@
 {
-  "name": "fareq-ai-global-saas",
+  "name": "afaaaaak-commercial-engine",
   "version": "1.0.0",
-  "description": "Fareq AI - Ultimate Commercial Video SaaS (ElevenLabs + Replicate AI)",
+  "description": "منظومة إنتاج الإعلانات التجارية المتكاملة عبر الذكاء الاصطناعي",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "cors": "^2.8.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "fluent-ffmpeg": "^2.1.3",
+    "node-fetch": "^2.7.0"
   }
 }

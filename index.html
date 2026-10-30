@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>فارق AI - صانع الإعلانات التجارية الاحترافية</title>
+  <title>فارق AI - استوديو إنتاج الإعلانات التجارية الاحترافية</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
     .badge-select.active {
       border-color: #10b981;
-      background: rgba(16, 185, 129, 0.22);
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.45);
+      background: rgba(16, 185, 129, 0.2);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
     }
   </style>
 </head>
@@ -21,15 +21,15 @@
     <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
       <div class="flex items-center gap-1.5 text-emerald-400 font-black">
         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        أصوات بشرية حقيقية + اختيار الأغاني
+        إعلانات كاملة (15 ثانية) بالصوت البشري الحقيقي والموسيقى
       </div>
-      <span class="text-[10px] bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded font-mono">v9 High-Stability</span>
+      <span class="text-[10px] bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded font-mono">15s Full Ad</span>
     </div>
     <div class="flex items-center justify-center gap-2 mb-2">
       <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30">
         <span class="text-slate-950 font-black text-2xl">فـ</span>
       </div>
-      <h1 class="text-2xl font-black text-white">فارق <span class="text-emerald-400 text-xs px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/40">COMMERCIAL PRO</span></h1>
+      <h1 class="text-2xl font-black text-white">فارق <span class="text-emerald-400 text-xs px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500/40">FULL COMMERCIAL</span></h1>
     </div>
   </header>
 
@@ -43,28 +43,28 @@
           <input type="file" id="productFileInput" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="previewUpload(event)">
           <div id="uploadPlaceholder">
             <span class="text-3xl block mb-1">📸</span>
-            <span class="text-xs font-bold text-slate-200 block">اضغط لاختيار صورة ساعتك أو منتجك</span>
+            <span class="text-xs font-bold text-slate-200 block">اضغط لاختيار صورة المنتج</span>
             <span class="text-[10px] text-emerald-400 font-semibold">توليد فيديو موديل سينمائي يستعرض المنتج</span>
           </div>
           <div id="uploadDone" class="hidden flex items-center justify-center gap-3">
             <img id="productImgPreview" src="" class="w-14 h-14 object-cover rounded-xl border-2 border-emerald-400 shadow-md">
             <div class="text-right">
               <span class="text-xs font-black text-emerald-400 block">✓ تم تحميل صورة المنتج بنجاح</span>
-              <span class="text-[10px] text-slate-400">ستتحول لإعلان تجاري متكامل</span>
+              <span class="text-[10px] text-slate-400">ستتحول لإعلان تجاري مدمج بالصوت والأغنية</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. أصوات بشرية عربية حقيقية -->
+      <!-- 2. المعلق الصوتي البشري -->
       <div class="mb-4">
-        <label class="block text-xs font-black text-emerald-400 mb-2">2. المعلّق الصوتي البشري (نبرة تسويقية مقنعة):</label>
+        <label class="block text-xs font-black text-emerald-400 mb-2">2. المعلّق الصوتي البشري الحقيقي (صوت مقنع واحترافي):</label>
         <div class="grid grid-cols-3 gap-2">
           
           <div onclick="selectVoice(this, 'nPczCjzI2devNBz1zQrb')" class="badge-select active border-2 border-slate-700 bg-slate-900 rounded-2xl p-2.5 text-center cursor-pointer transition">
             <span class="text-xl block mb-0.5">🎙️</span>
             <span class="text-xs font-black text-white block">كريم</span>
-            <span class="text-[9px] text-emerald-400 block font-bold">مذيع إعلانات فخم</span>
+            <span class="text-[9px] text-emerald-400 block font-bold">صوت إذاعي فخم</span>
           </div>
 
           <div onclick="selectVoice(this, 'EXAVITQu4vr4xnSDxMaL')" class="badge-select border-2 border-slate-700 bg-slate-900 rounded-2xl p-2.5 text-center cursor-pointer transition">
@@ -82,28 +82,15 @@
         </div>
       </div>
 
-      <!-- 3. اختيار الأغاني والموسيقى الخلفية -->
+      <!-- 3. اختيار الأغاني أو رفع لحن خاص -->
       <div class="mb-4">
-        <label class="block text-xs font-black text-emerald-400 mb-2">3. موسيقى الإعلان الخلفية (اختيار الزبون):</label>
-        <div class="grid grid-cols-2 gap-2 mb-2">
-          
-          <div onclick="selectMusic(this, 'luxury')" class="music-card active border-2 border-emerald-500 bg-emerald-950/40 rounded-xl p-2 text-center cursor-pointer transition">
-            <span class="text-xs font-black text-white block">✨ فخامة وهدوء (Luxury Beat)</span>
-            <span class="text-[9px] text-emerald-400 block">مناسبة للساعات والعطور</span>
+        <label class="block text-xs font-black text-emerald-400 mb-2">3. موسيقى الإعلان والأغنية (اختيار الزبون):</label>
+        <div class="relative border border-slate-700 bg-slate-900 rounded-xl p-3 text-center cursor-pointer hover:border-emerald-400 transition">
+          <input type="file" id="customAudioInput" accept="audio/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleMusicUpload(event)">
+          <div id="customMusicText" class="text-xs font-bold text-slate-200">
+            🎵 اضغط لرفع أغنية أو شيلة أو لحن خاص من جهازك (اختياري)
           </div>
-
-          <div onclick="selectMusic(this, 'energy')" class="music-card border-2 border-slate-700 bg-slate-900 rounded-xl p-2 text-center cursor-pointer transition">
-            <span class="text-xs font-black text-white block">🔥 حماسي تيك توك (Hype Beat)</span>
-            <span class="text-[9px] text-slate-400 block">إيقاع سريع يجلب مبيعات</span>
-          </div>
-
-        </div>
-
-        <div class="relative border border-slate-700 bg-slate-900/90 rounded-xl p-2 text-center cursor-pointer">
-          <input type="file" id="customAudioInput" accept="audio/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleCustomMusic(event)">
-          <div id="customMusicText" class="text-[11px] font-bold text-slate-300">
-            🎵 أو اضغط لرفع أغنية / لحن خاص من جهازك
-          </div>
+          <span class="text-[10px] text-emerald-400 block mt-0.5">يتم دمج الموسيقى تلقائياً بخلفية الفيديو مع تخفيض صوتها أثناء كلام المعلق</span>
         </div>
       </div>
 
@@ -120,14 +107,14 @@
         </div>
 
         <div>
-          <label class="block text-[11px] font-bold text-slate-300 mb-1">نص السيناريو المنطوق بالصوت البشري:</label>
-          <textarea id="targetScript" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-400 leading-relaxed">إذا كنت تبحث عن الأناقة الحقيقية، فهذه الساعة صُنعت لك خصيصاً. تصميم كلاسيكي فاخر، مقاومة تامة للماء، ومع عرض خاص جداً اليوم: خصم خمسة وثلاثين بالمئة وتوصيل سريع لباب بيتك. اطلب الآن قبل نفاذ الكمية!</textarea>
+          <label class="block text-[11px] font-bold text-slate-300 mb-1">سيناريو الإعلان المنطوق (مدة 15 ثانية):</label>
+          <textarea id="targetScript" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-400 leading-relaxed">إذا كنت تبحث عن الأناقة الحقيقية والفخامة، فهذه الساعة صُنعت لك خصيصاً. تصميم كلاسيكي فاخر، مقاومة تامة للماء، ومع عرض خاص جداً اليوم: خصم خمسة وثلاثين بالمئة وتوصيل سريع لباب بيتك. اطلب الآن قبل نفاذ الكمية!</textarea>
         </div>
       </div>
 
       <!-- زر التوليد -->
-      <button id="generateVideoBtn" onclick="startGeneration()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:opacity-95 text-slate-950 font-black py-3.5 rounded-xl text-xs transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2">
-        <span>توليد الإعلان النهائي المدمج (فيديو + صوت بشري + أغنية)</span>
+      <button id="generateVideoBtn" onclick="startFullCommercialProduction()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:opacity-95 text-slate-950 font-black py-4 rounded-xl text-xs transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2">
+        <span>توليد إعلان تجاري حقيقي كامل (15 ثانية + صوت بشري + أغنية)</span>
         <span>🎬🚀</span>
       </button>
 
@@ -135,34 +122,34 @@
       <div id="waitBox" class="hidden mt-4 text-center p-4 bg-slate-900 rounded-2xl border border-emerald-500/40">
         <div class="w-10 h-10 mx-auto mb-2 rounded-full border-4 border-emerald-400 border-t-transparent animate-spin"></div>
         <h4 class="text-xs font-black text-emerald-400 mb-1" id="waitTitle">جاري تسجيل الصوت البشري الحقيقي...</h4>
-        <p class="text-[10px] text-slate-400" id="waitSub">يتم الآن إخراج الفيديو بدقة عالية عبر الذكاء الاصطناعي</p>
+        <p class="text-[10px] text-slate-400" id="waitSub">يتم الآن إخراج الإعلان ودمج مسارات الصوت داخل ملف الفيديو</p>
       </div>
 
       <div id="errBox" class="hidden mt-4 p-3 bg-rose-950/80 border border-rose-500/60 rounded-xl text-right">
-        <span class="text-xs font-bold text-rose-300 block mb-1">تنبيه السيرفر:</span>
+        <span class="text-xs font-bold text-rose-300 block mb-1">تنبيه:</span>
         <span class="text-[11px] text-rose-200 block" id="errDesc"></span>
       </div>
 
-      <!-- الفيديو النهائي -->
+      <!-- الفيديو التجاري الكامل النهائي -->
       <div id="finalOutputSection" class="hidden mt-5">
-        <div class="border-2 border-emerald-500 rounded-2xl p-3 bg-black text-center shadow-2xl">
+        <div class="border-2 border-emerald-500 rounded-2xl p-4 bg-black text-center shadow-2xl">
           <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-black text-emerald-400 flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-              فيديو الإعلان التجاري الكامل (صوت بشري + أغنية + فيديو 9:16):
+              الإعلان التجاري الكامل (15 ثانية بصوت بشري وموسيقى مدمجة):
             </span>
-            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">Full 12s Commercial</span>
+            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded font-bold">15s Master Ad</span>
           </div>
 
-          <div class="relative mx-auto max-w-[290px] aspect-[9/16] rounded-xl overflow-hidden border border-slate-700 mb-3 bg-slate-950 shadow-inner flex items-center justify-center">
-            <video id="finalCommercialPlayer" class="w-full h-full object-cover" controls autoplay loop playsinline></video>
+          <div class="relative mx-auto max-w-[300px] aspect-[9/16] rounded-xl overflow-hidden border border-slate-700 mb-3 bg-slate-950 shadow-inner flex items-center justify-center">
+            <video id="finalCommercialPlayer" class="w-full h-full object-cover" controls autoplay playsinline></video>
           </div>
 
-          <button onclick="downloadMasterPiece()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg mb-2">
-            <span>تحميل الفيديو الكامل إلى هاتفك (MP4)</span>
+          <a id="downloadMasterBtn" href="#" download="Full_Commercial_Ad_15s.mp4" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg mb-2">
+            <span>تحميل الإعلان الكامل مباشرة إلى هاتفك (MP4)</span>
             <span>📥</span>
-          </button>
-          <span class="text-[10px] text-slate-400 block font-semibold">مدمج بالكامل بصوت بشري نقي والأغنية المختارة وجاهز للنشر المباشر.</span>
+          </a>
+          <span class="text-[10px] text-slate-400 block font-semibold">ملف فيديو متكامل يحتوي على الصوت والموسيقى مدمجين داخله جاهز فوراً للنشر على TikTok وInstagram.</span>
         </div>
       </div>
 
@@ -173,17 +160,10 @@
     منظومة فارق AI الاحترافية &copy; 2026
   </footer>
 
-  <video id="sourceRawVideo" crossorigin="anonymous" playsinline loop muted class="hidden"></video>
-  <audio id="sourceCustomMusic" crossorigin="anonymous" class="hidden"></audio>
-  <canvas id="studioCanvas" width="720" height="1280" class="hidden"></canvas>
-
   <script>
     let activeVoiceId = 'nPczCjzI2devNBz1zQrb';
-    let chosenMusicType = 'luxury';
-    let customMusicUrl = null;
     let uploadedProductBase64 = null;
-    let finalMasterBlob = null;
-    let finalMasterUrl = null;
+    let customMusicBase64 = null;
 
     function selectVoice(card, vId) {
       document.querySelectorAll('.badge-select').forEach(c => c.classList.remove('active'));
@@ -191,29 +171,15 @@
       activeVoiceId = vId;
     }
 
-    function selectMusic(card, mType) {
-      document.querySelectorAll('.music-card').forEach(c => {
-        c.classList.remove('active', 'border-emerald-500', 'bg-emerald-950/40');
-        c.classList.add('border-slate-700', 'bg-slate-900');
-      });
-      card.classList.add('active', 'border-emerald-500', 'bg-emerald-950/40');
-      card.classList.remove('border-slate-700', 'bg-slate-900');
-      chosenMusicType = mType;
-      customMusicUrl = null;
-      document.getElementById('customMusicText').innerText = "🎵 أو اضغط لرفع أغنية / لحن خاص من جهازك";
-    }
-
-    function handleCustomMusic(e) {
+    function handleMusicUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
-      customMusicUrl = URL.createObjectURL(file);
-      chosenMusicType = 'custom';
-      document.querySelectorAll('.music-card').forEach(c => {
-        c.classList.remove('active', 'border-emerald-500', 'bg-emerald-950/40');
-        c.classList.add('border-slate-700', 'bg-slate-900');
-      });
-      document.getElementById('customMusicText').innerText = `✓ تم اختيار: ${file.name}`;
-      document.getElementById('sourceCustomMusic').src = customMusicUrl;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        customMusicBase64 = evt.target.result;
+        document.getElementById('customMusicText').innerText = `✓ تم اختيار الأغنية: ${file.name}`;
+      };
+      reader.readAsDataURL(file);
     }
 
     function previewUpload(event) {
@@ -229,7 +195,7 @@
       reader.readAsDataURL(file);
     }
 
-    async function startGeneration() {
+    async function startFullCommercialProduction() {
       const name = document.getElementById('targetProductName').value.trim();
       const offer = document.getElementById('targetProductOffer').value.trim();
       const script = document.getElementById('targetScript').value.trim();
@@ -241,6 +207,8 @@
       const errBox = document.getElementById('errBox');
       const errDesc = document.getElementById('errDesc');
       const outSection = document.getElementById('finalOutputSection');
+      const player = document.getElementById('finalCommercialPlayer');
+      const downloadBtn = document.getElementById('downloadMasterBtn');
 
       if (!uploadedProductBase64) {
         alert('يرجى رفع صورة المنتج أولاً');
@@ -257,11 +225,10 @@
       wait.classList.remove('hidden');
 
       try {
-        waitTitle.innerText = "المرحلة 1/3: بدء التوليد وتجهيز الصوت البشري (ElevenLabs)...";
-        waitSub.innerText = "جاري إرسال الصورة وتوليد المشهد السينمائي...";
+        waitTitle.innerText = "المرحلة 1/3: تسجيل الصوت البشري الحقيقي (ElevenLabs)...";
+        waitSub.innerText = "يتم تسجيل الصوت بصوت مذيع إعلاني مقنع بدون أي لكنة روبوتية...";
 
-        // بدء الطلب بشكل فوري دون تعليق السيرفر
-        const startResp = await fetch('/api/start-commercial-ad', {
+        const startResp = await fetch('/api/start-production', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -269,50 +236,51 @@
             productName: name,
             offer: offer,
             script: script,
-            voiceId: activeVoiceId
+            voiceId: activeVoiceId,
+            customMusicBase64: customMusicBase64
           })
         });
 
         const startData = await startResp.json();
-        if (!startResp.ok || !startData.predictionId) {
-          throw new Error(startData.error || 'تعذر بدء معالجة الفيديو في السيرفر');
+        if (!startResp.ok || !startData.taskId) {
+          throw new Error(startData.error || 'تعذر بدء عملية الإنتاج');
         }
 
+        const taskId = startData.taskId;
         const predictionId = startData.predictionId;
-        const voiceAudioUrl = startData.audioUrl;
 
-        // التحقق الدوري من المتصفح (مستقر ويتفادى قطع اتصال Render نهائياً)
-        waitTitle.innerText = "المرحلة 2/3: جاري رندرة فيديو الموديل والمنتج سينمائياً...";
-        waitSub.innerText = "الذكاء الاصطناعي يقوم بتحريك المنتج وإضاءته (يرجى الانتظار ثوانٍ معدودة)...";
+        waitTitle.innerText = "المرحلة 2/3: إخراج المشهد السينمائي للمنتج والموديل...";
+        waitSub.innerText = "جاري تحريك المنتج وإضاءته بتقنيات 4K سينمائية...";
 
-        let videoUrl = null;
+        let finished = false;
         let attempts = 0;
 
-        while (!videoUrl && attempts < 90) {
-          await new Promise(r => setTimeout(r, 3500));
+        while (!finished && attempts < 90) {
+          await new Promise(r => setTimeout(r, 4000));
           attempts++;
 
-          const checkResp = await fetch(`/api/check-ad-status?id=${predictionId}`);
+          const checkResp = await fetch(`/api/check-task-status?taskId=${taskId}&predictionId=${predictionId}`);
           const checkData = await checkResp.json();
 
-          if (checkData.status === 'succeeded' && checkData.videoUrl) {
-            videoUrl = checkData.videoUrl;
+          if (checkData.status === 'completed' && checkData.videoUrl) {
+            finished = true;
+            player.src = checkData.videoUrl;
+            downloadBtn.href = checkData.videoUrl;
+            player.play();
             break;
+          } else if (checkData.status === 'rendering_ffmpeg') {
+            waitTitle.innerText = "المرحلة 3/3: المونتاج السيرفري ودمج مسار الصوت والأغنية...";
+            waitSub.innerText = "يتم تمديد الفيديو لـ 15 ثانية ودمج الصوت البشري والموسيقى في ملف MP4 واحد...";
           } else if (checkData.status === 'failed') {
-            throw new Error(checkData.error || 'فشلت معالجة الفيديو في Replicate');
+            throw new Error(checkData.error || 'فشلت معالجة الإعلان');
           } else {
-            waitSub.innerText = `جاري المعالجة السينمائية... (${attempts * 3} ثانية)`;
+            waitSub.innerText = `جاري المعالجة... (${attempts * 4} ثانية)`;
           }
         }
 
-        if (!videoUrl) {
-          throw new Error('استغرقت رندرة الفيديو وقتاً طويلاً، يرجى المحاولة بصورة أصغر حجماً');
+        if (!finished) {
+          throw new Error('استغرقت العملية وقتاً طويلاً، يرجى المحاولة مرة أخرى');
         }
-
-        waitTitle.innerText = "المرحلة 3/3: مونتاج ودمج الصوت البشري الحقيقي والأغنية المختارة...";
-        waitSub.innerText = "جاري تجميع الفيديو والصوت والمؤثرات وإنتاج الإعلان الكامل...";
-
-        await assembleMasterVideo(videoUrl, voiceAudioUrl, name, offer);
 
         wait.classList.add('hidden');
         outSection.classList.remove('hidden');
@@ -326,234 +294,6 @@
         errBox.classList.remove('hidden');
         btn.disabled = false;
       }
-    }
-
-    function assembleMasterVideo(videoUrl, voiceUrl, prodName, offerText) {
-      return new Promise((resolve, reject) => {
-        const rawVid = document.getElementById('sourceRawVideo');
-        const customMusic = document.getElementById('sourceCustomMusic');
-        const canvas = document.getElementById('studioCanvas');
-        const ctx = canvas.getContext('2d');
-        const finalPlayer = document.getElementById('finalCommercialPlayer');
-
-        rawVid.src = videoUrl;
-        rawVid.load();
-
-        rawVid.onloadeddata = async () => {
-          try { await rawVid.play(); } catch(e) {}
-
-          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          const dest = audioCtx.createMediaStreamDestination();
-
-          // 1. صوت المعلق البشري
-          if (voiceUrl) {
-            try {
-              const voiceEl = new Audio(voiceUrl);
-              await voiceEl.play().catch(() => {});
-              const vSrc = audioCtx.createMediaElementSource(voiceEl);
-              const vGain = audioCtx.createGain();
-              vGain.gain.value = 1.0;
-              vSrc.connect(vGain);
-              vGain.connect(dest);
-              vGain.connect(audioCtx.destination);
-            } catch(e) {
-              console.warn("Voice connect:", e);
-            }
-          }
-
-          // 2. موسيقى أو أغنية من اختيار الزبون
-          if (chosenMusicType === 'custom' && customMusicUrl) {
-            try {
-              const bgEl = new Audio(customMusicUrl);
-              bgEl.loop = true;
-              await bgEl.play().catch(() => {});
-              const mSrc = audioCtx.createMediaElementSource(bgEl);
-              const mGain = audioCtx.createGain();
-              mGain.gain.value = 0.35;
-              mSrc.connect(mGain);
-              mGain.connect(dest);
-              mGain.connect(audioCtx.destination);
-            } catch(e) {
-              console.warn("Music connect:", e);
-            }
-          } else {
-            generateSelectedMusicTrack(audioCtx, dest, chosenMusicType);
-          }
-
-          const stream = canvas.captureStream(30);
-          if (dest.stream.getAudioTracks().length > 0) {
-            stream.addTrack(dest.stream.getAudioTracks()[0]);
-          }
-
-          let mimeType = 'video/mp4';
-          if (!MediaRecorder.isTypeSupported(mimeType)) {
-            mimeType = 'video/webm;codecs=vp9,opus';
-            if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = '';
-          }
-
-          const recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
-          const chunks = [];
-
-          recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-          recorder.onstop = () => {
-            finalMasterBlob = new Blob(chunks, { type: 'video/mp4' });
-            if (finalMasterUrl) URL.revokeObjectURL(finalMasterUrl);
-            finalMasterUrl = URL.createObjectURL(finalMasterBlob);
-
-            finalPlayer.src = finalMasterUrl;
-            finalPlayer.play();
-            resolve();
-          };
-
-          recorder.start();
-
-          const totalFrames = 360;
-          let frame = 0;
-
-          function renderFrame() {
-            if (frame >= totalFrames) {
-              recorder.stop();
-              return;
-            }
-            const t = frame / totalFrames;
-            drawFrameDesign(ctx, canvas.width, canvas.height, rawVid, prodName, offerText, t);
-            frame++;
-            requestAnimationFrame(renderFrame);
-          }
-
-          renderFrame();
-        };
-
-        rawVid.onerror = () => reject(new Error("تعذر جلب ملف الفيديو من السيرفر"));
-      });
-    }
-
-    function drawFrameDesign(ctx, w, h, vid, name, offer, t) {
-      ctx.fillStyle = '#05070e';
-      ctx.fillRect(0, 0, w, h);
-
-      ctx.save();
-      const vw = vid.videoWidth || 720;
-      const vh = vid.videoHeight || 720;
-      const scale = Math.max(w / vw, (h * 0.75) / vh);
-      const dw = vw * scale;
-      const dh = vh * scale;
-      const dx = (w - dw) / 2;
-      const dy = (h - dh) / 2 - 40;
-      ctx.drawImage(vid, dx, dy, dw, dh);
-      ctx.restore();
-
-      const topG = ctx.createLinearGradient(0, 0, 0, 240);
-      topG.addColorStop(0, 'rgba(4, 7, 15, 0.95)');
-      topG.addColorStop(1, 'rgba(4, 7, 15, 0)');
-      ctx.fillStyle = topG;
-      ctx.fillRect(0, 0, w, 240);
-
-      const botG = ctx.createLinearGradient(0, h - 380, 0, h);
-      botG.addColorStop(0, 'rgba(4, 7, 15, 0)');
-      botG.addColorStop(0.3, 'rgba(4, 7, 15, 0.85)');
-      botG.addColorStop(1, 'rgba(4, 7, 15, 0.98)');
-      ctx.fillStyle = botG;
-      ctx.fillRect(0, h - 380, w, 380);
-
-      ctx.save();
-      const bY = 110 + Math.sin(t * Math.PI * 4) * 5;
-      ctx.fillStyle = '#10b981';
-      drawRounded(ctx, 40, bY, w - 80, 85, 42, true);
-      ctx.fillStyle = '#022c22';
-      ctx.font = '900 34px Cairo, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(`⚡ ${offer}`, w / 2, bY + 44);
-      ctx.restore();
-
-      ctx.save();
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 48px Cairo, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
-      ctx.shadowBlur = 18;
-      ctx.fillText(name, w / 2, h - 230);
-
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '700 24px Cairo, sans-serif';
-      ctx.fillText('شحن سريع متوفر • دفع ومعاينة عند الاستلام', w / 2, h - 175);
-      ctx.restore();
-
-      ctx.save();
-      const scaleBtn = 1 + Math.sin(t * Math.PI * 8) * 0.035;
-      ctx.translate(w / 2, h - 90);
-      ctx.scale(scaleBtn, scaleBtn);
-      ctx.fillStyle = '#059669';
-      drawRounded(ctx, -260, -42, 520, 84, 42, true);
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '900 34px Cairo, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('اطلب الآن لباب بيتك 🛒', 0, 0);
-      ctx.restore();
-    }
-
-    function generateSelectedMusicTrack(audioCtx, dest, type) {
-      const tempo = type === 'energy' ? 0.38 : 0.60;
-      const count = Math.floor(12 / tempo);
-
-      for (let i = 0; i < count; i++) {
-        const time = audioCtx.currentTime + i * tempo;
-        
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(type === 'energy' ? 140 : 85, time);
-        osc.frequency.exponentialRampToValueAtTime(38, time + 0.12);
-        gain.gain.setValueAtTime(0.12, time);
-        gain.gain.exponentialRampToValueAtTime(0.001, time + 0.12);
-        osc.connect(gain);
-        gain.connect(dest);
-        gain.connect(audioCtx.destination);
-        osc.start(time);
-        osc.stop(time + 0.14);
-
-        if (i % 2 === 0) {
-          const melodyOsc = audioCtx.createOscillator();
-          const mGain = audioCtx.createGain();
-          melodyOsc.type = 'triangle';
-          melodyOsc.frequency.setValueAtTime(type === 'energy' ? 440 : 330, time);
-          mGain.gain.setValueAtTime(0.04, time);
-          mGain.gain.exponentialRampToValueAtTime(0.001, time + 0.35);
-          melodyOsc.connect(mGain);
-          mGain.connect(dest);
-          mGain.connect(audioCtx.destination);
-          melodyOsc.start(time);
-          melodyOsc.stop(time + 0.36);
-        }
-      }
-    }
-
-    function drawRounded(ctx, x, y, width, height, radius, fill) {
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + width - radius, y);
-      ctx.quadraticCurveTo(x + width, y + height, x + width, y + radius);
-      ctx.lineTo(x + width, y + height - radius);
-      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-      ctx.lineTo(x + radius, y + height);
-      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-      ctx.lineTo(x, y + radius);
-      ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
-      if (fill) ctx.fill();
-    }
-
-    function downloadMasterPiece() {
-      if (!finalMasterBlob) return;
-      const a = document.createElement('a');
-      a.href = finalMasterUrl;
-      const sName = (document.getElementById('targetProductName').value.trim() || 'Commercial_Ad').replace(/\s+/g, '_');
-      a.download = `${sName}_Commercial_Master.mp4`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
     }
   </script>
 </body>
