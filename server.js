@@ -5,11 +5,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// المفاتيح مع المعالجة الدقيقة لتجنب أخطاء المسافات أو حالة الأحرف
 const ELEVEN_API_KEY = (process.env.ELEVEN_API_KEY || "sk_12e052a47211e2714c013bba2ecaff4d96510b6d50639430").trim();
-let rawReplicate = (process.env.REPLICATE_API_TOKEN || "r8_TwEYjVBFnZJO7lELWFuvp23nEQoSOgw3AIebt").trim();
+let rawReplicate = (process.env.REPLICATE_API_TOKEN || "r8_GQp5iMKN0YKzck5lLXZ1Of7FdhSSwZP2vCQQg").trim();
 
-// تصحيح الحرف الأول تلقائياً في حال تحول إلى كابيتال
 if (rawReplicate.startsWith('R8_')) {
   rawReplicate = 'r8_' + rawReplicate.slice(3);
 }
@@ -24,7 +22,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// المسار الشامل لإنتاج الإعلان الحقيقي بالذكاء الاصطناعي
 app.post('/api/generate-commercial-ad', async (req, res) => {
   try {
     const { imageBase64, productName, offer, script, voiceId } = req.body;
@@ -37,8 +34,7 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
     }
 
     console.log(`[1/3] توليد الصوت البشري للمنتج: ${productName}...`);
-    
-    // 1. توليد الصوت البشري عبر ElevenLabs
+
     let audioDataUri = null;
     try {
       const selectedVoice = voiceId || '21m00Tcm4TlvDq8ikWAM';
@@ -73,7 +69,6 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
 
     console.log(`[2/3] إرسال صورة المنتج إلى Replicate...`);
 
-    // 2. أمر التوليد السينمائي الحقيقي
     const videoPrompt = `Cinematic commercial video advertisement, professional model hands and person holding and showcasing this ${productName || 'luxury product'} directly to the camera, showcasing its high-end details in a luxury studio setting, soft dramatic lighting, smooth slow motion 4k commercial camera movement, realistic, lifelike, highly detailed.`;
 
     const repResp = await fetch('https://api.replicate.com/v1/models/minimax/video-01/predictions', {
@@ -103,10 +98,9 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
 
     console.log(`[3/3] جاري المعالجة (ID: ${prediction.id})...`);
 
-    // المتابعة حتى اكتمال الفيديو
     let attempts = 0;
-    while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && attempts < 50) {
-      await new Promise(resolve => setTimeout(resolve, 3500));
+    while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && attempts < 60) {
+      await new Promise(resolve => setTimeout(resolve, 4000));
       attempts++;
 
       const checkResp = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
@@ -138,7 +132,6 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
   }
 });
 
-// بروكسي التنزيل المباشر
 app.get('/api/download-proxy', async (req, res) => {
   try {
     const { url, filename } = req.query;
