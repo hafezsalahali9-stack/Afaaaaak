@@ -5,8 +5,15 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const ELEVEN_API_KEY = process.env.ELEVEN_API_KEY || "sk_12e052a47211e2714c013bba2ecaff4d96510b6d50639430";
-const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN || "r8_TwEYjVBFnZJO7lELWFuvp23nEQoSOgw3AIebt";
+// المفاتيح مع المعالجة الدقيقة لتجنب أخطاء المسافات أو حالة الأحرف
+const ELEVEN_API_KEY = (process.env.ELEVEN_API_KEY || "sk_12e052a47211e2714c013bba2ecaff4d96510b6d50639430").trim();
+let rawReplicate = (process.env.REPLICATE_API_TOKEN || "r8_TwEYjVBFnZJO7lELWFuvp23nEQoSOgw3AIebt").trim();
+
+// تصحيح الحرف الأول تلقائياً في حال تحول إلى كابيتال
+if (rawReplicate.startsWith('R8_')) {
+  rawReplicate = 'r8_' + rawReplicate.slice(3);
+}
+const REPLICATE_API_TOKEN = rawReplicate;
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -29,7 +36,7 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
       return res.status(400).json({ error: 'يرجى كتابة نص السيناريو.' });
     }
 
-    console.log(`[1/3] البدء بتوليد الصوت البشري للمنتج: ${productName}...`);
+    console.log(`[1/3] توليد الصوت البشري للمنتج: ${productName}...`);
     
     // 1. توليد الصوت البشري عبر ElevenLabs
     let audioDataUri = null;
@@ -64,10 +71,10 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
       console.warn('TTS fetch failed:', ttsErr.message);
     }
 
-    console.log(`[2/3] إرسال صورة المنتج إلى Replicate لتوليد المشهد السينمائي الحقيقي...`);
+    console.log(`[2/3] إرسال صورة المنتج إلى Replicate...`);
 
-    // 2. أمر التوليد السينمائي الحقيقي للمنتج والموديل
-    const videoPrompt = `Cinematic commercial video advertisement for e-commerce, a professional elegant person holding and showcasing this ${productName || 'luxury product'} directly to the camera, wearing it, demonstrating its high-end details in a luxury studio setting, warm soft dramatic lighting, smooth slow motion 4k commercial camera movement, realistic, lifelike, highly detailed.`;
+    // 2. أمر التوليد السينمائي الحقيقي
+    const videoPrompt = `Cinematic commercial video advertisement, professional model hands and person holding and showcasing this ${productName || 'luxury product'} directly to the camera, showcasing its high-end details in a luxury studio setting, soft dramatic lighting, smooth slow motion 4k commercial camera movement, realistic, lifelike, highly detailed.`;
 
     const repResp = await fetch('https://api.replicate.com/v1/models/minimax/video-01/predictions', {
       method: 'POST',
@@ -87,15 +94,16 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
     let prediction = await repResp.json();
     if (!repResp.ok || prediction.error) {
       console.error('Replicate error:', prediction);
+      const errorMsg = prediction.detail || prediction.error || 'خطأ في التحقق من توكن Replicate';
       return res.status(repResp.status || 500).json({
-        error: prediction.error || prediction.detail || 'خطأ في تشغيل محرك Replicate AI',
+        error: errorMsg,
         details: prediction
       });
     }
 
-    console.log(`[3/3] جاري رندرة مشهد الفيديو (ID: ${prediction.id})...`);
+    console.log(`[3/3] جاري المعالجة (ID: ${prediction.id})...`);
 
-    // المتابعة الدورية حتى تنتهي رندرة الفيديو بالكامل
+    // المتابعة حتى اكتمال الفيديو
     let attempts = 0;
     while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && attempts < 50) {
       await new Promise(resolve => setTimeout(resolve, 3500));
@@ -119,7 +127,7 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
       });
     } else {
       return res.status(500).json({
-        error: prediction.error || 'فشلت معالجة الفيديو في Replicate، يرجى المحاولة بصورة ذات دقة واضحة.',
+        error: prediction.error || 'فشلت معالجة الفيديو في Replicate.',
         details: prediction
       });
     }
