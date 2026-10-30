@@ -61,20 +61,20 @@
         <label class="block text-xs font-black text-emerald-400 mb-2">2. اختر الموديل البشري الحقيقي (صوت وحركة فم حقيقية):</label>
         <div class="grid grid-cols-3 gap-2" id="modelsGrid">
           
-          <div onclick="selectModel(this, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80', 'ar-SY-AmanyNeural')" class="model-card active border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-emerald-400/80 shadow">
+          <div onclick="selectModel(this, 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg', 'ar-SY-AmanyNeural')" class="model-card active border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
+            <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-emerald-400/80 shadow">
             <span class="text-[11px] font-black text-white block">سارة (شامية)</span>
             <span class="text-[9px] text-emerald-400 block font-bold">صوت أماني</span>
           </div>
 
-          <div onclick="selectModel(this, 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80', 'ar-SA-HamedNeural')" class="model-card border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
+          <div onclick="selectModel(this, 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg', 'ar-SA-HamedNeural')" class="model-card border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
+            <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
             <span class="text-[11px] font-black text-white block">سعود (خليجي)</span>
             <span class="text-[9px] text-emerald-400 block font-bold">صوت حامد</span>
           </div>
 
-          <div onclick="selectModel(this, 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&q=80', 'ar-EG-SalmaNeural')" class="model-card border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
-            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
+          <div onclick="selectModel(this, 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg', 'ar-EG-SalmaNeural')" class="model-card border-2 border-slate-700 bg-slate-900/90 rounded-2xl p-2 text-center cursor-pointer transition">
+            <img src="https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg" class="w-14 h-14 rounded-full mx-auto object-cover mb-1 border border-slate-600 shadow">
             <span class="text-[11px] font-black text-white block">مريم (مصرية)</span>
             <span class="text-[9px] text-emerald-400 block font-bold">صوت سلمى</span>
           </div>
@@ -161,7 +161,7 @@
   </footer>
 
   <script>
-    let currentAvatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80';
+    let currentAvatarUrl = 'https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg';
     let currentVoiceId = 'ar-SY-AmanyNeural';
     let uploadedProductBase64 = null;
     let generatedVideoUrl = null;
@@ -271,6 +271,7 @@
     function triggerDirectDownload() {
       if (!generatedVideoUrl) return;
       const safeName = (document.getElementById('itemName').value.trim() || 'Fareq_Ad').replace(/\s+/g, '_');
+      // Use the backend download-proxy to stream MP4 without any S3 access denied issues!
       const proxyUrl = `/api/download-proxy?url=${encodeURIComponent(generatedVideoUrl)}&filename=${encodeURIComponent(safeName + '.mp4')}`;
       window.location.href = proxyUrl;
     }
