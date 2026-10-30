@@ -5,71 +5,71 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// المفاتيح مدمجة وجاهزة مباشرة
 const ELEVEN_API_KEY = process.env.ELEVEN_API_KEY || "sk_12e052a47211e2714c013bba2ecaff4d96510b6d50639430";
 const REPLICATE_API_TOKEN = process.env.REPLICATE_API_TOKEN || "r8_TwEYjVBFnZJO7lELWFuvp23nEQoSOgw3AIebt";
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 1. توليد التعليق الصوتي البشري عبر ElevenLabs
-app.post('/api/generate-voice', async (req, res) => {
+// المسار الشامل لإنتاج الإعلان الحقيقي بالذكاء الاصطناعي
+app.post('/api/generate-commercial-ad', async (req, res) => {
   try {
-    const { text, voiceId } = req.body;
-    if (!text) return res.status(400).json({ error: 'نص السيناريو مطلوب' });
+    const { imageBase64, productName, offer, script, voiceId } = req.body;
 
-    const selectedVoice = voiceId || '21m00Tcm4TlvDq8ikWAM'; // Rachel or chosen speaker
-
-    const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}`, {
-      method: 'POST',
-      headers: {
-        'xi-api-key': ELEVEN_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        text: text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.85,
-          style: 0.3,
-          use_speaker_boost: true
-        }
-      })
-    });
-
-    if (!resp.ok) {
-      const errJson = await resp.json().catch(() => ({}));
-      return res.status(resp.status).json({
-        error: errJson.detail?.message || 'خطأ في توليد الصوت من ElevenLabs',
-        details: errJson
-      });
+    if (!imageBase64) {
+      return res.status(400).json({ error: 'يرجى رفع صورة المنتج أولاً.' });
+    }
+    if (!script) {
+      return res.status(400).json({ error: 'يرجى كتابة نص السيناريو.' });
     }
 
-    const arrayBuffer = await resp.arrayBuffer();
-    const base64Audio = Buffer.from(arrayBuffer).toString('base64');
-    res.json({ success: true, audioData: `data:audio/mp3;base64,${base64Audio}` });
+    console.log(`[1/3] البدء بتوليد الصوت البشري للمنتج: ${productName}...`);
+    
+    // 1. توليد الصوت البشري عبر ElevenLabs
+    let audioDataUri = null;
+    try {
+      const selectedVoice = voiceId || '21m00Tcm4TlvDq8ikWAM';
+      const ttsResp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}`, {
+        method: 'POST',
+        headers: {
+          'xi-api-key': ELEVEN_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: script,
+          model_id: 'eleven_multilingual_v2',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.85,
+            style: 0.25,
+            use_speaker_boost: true
+          }
+        })
+      });
 
-  } catch (err) {
-    console.error('ElevenLabs Error:', err);
-    res.status(500).json({ error: err.message });
-  }
-});
+      if (ttsResp.ok) {
+        const audioBuf = await ttsResp.arrayBuffer();
+        audioDataUri = `data:audio/mp3;base64,${Buffer.from(audioBuf).toString('base64')}`;
+      } else {
+        const errDetail = await ttsResp.json().catch(() => ({}));
+        console.warn('ElevenLabs API warning:', errDetail);
+      }
+    } catch (ttsErr) {
+      console.warn('TTS fetch failed:', ttsErr.message);
+    }
 
-// 2. توليد فيديو إعلاني تفاعلي سينمائي عبر Replicate AI
-app.post('/api/generate-replicate-video', async (req, res) => {
-  try {
-    const { prompt, imageUrl } = req.body;
-    if (!prompt) return res.status(400).json({ error: 'الوصف الإعلاني مطلوب' });
+    console.log(`[2/3] إرسال صورة المنتج إلى Replicate لتوليد المشهد السينمائي الحقيقي...`);
 
-    // استخدام أحدث وأقوى نموذج لتوليد فيديو المنتجات السينمائي عبر Replicate
-    // Minimax video-01 أو Luma Ray
-    const startResp = await fetch('https://api.replicate.com/v1/models/minimax/video-01/predictions', {
+    // 2. أمر التوليد السينمائي الحقيقي للمنتج والموديل
+    const videoPrompt = `Cinematic commercial video advertisement for e-commerce, a professional elegant person holding and showcasing this ${productName || 'luxury product'} directly to the camera, wearing it, demonstrating its high-end details in a luxury studio setting, warm soft dramatic lighting, smooth slow motion 4k commercial camera movement, realistic, lifelike, highly detailed.`;
+
+    const repResp = await fetch('https://api.replicate.com/v1/models/minimax/video-01/predictions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${REPLICATE_API_TOKEN}`,
@@ -77,53 +77,60 @@ app.post('/api/generate-replicate-video', async (req, res) => {
       },
       body: JSON.stringify({
         input: {
-          prompt: prompt,
-          first_frame_image: imageUrl || undefined,
+          prompt: videoPrompt,
+          first_frame_image: imageBase64,
           prompt_optimizer: true
         }
       })
     });
 
-    let prediction = await startResp.json();
-    if (!startResp.ok || prediction.error) {
-      console.error('Replicate Init Error:', prediction);
-      return res.status(startResp.status).json({
-        error: prediction.error || prediction.detail || 'فشل تشغيل محرك Replicate',
+    let prediction = await repResp.json();
+    if (!repResp.ok || prediction.error) {
+      console.error('Replicate error:', prediction);
+      return res.status(repResp.status || 500).json({
+        error: prediction.error || prediction.detail || 'خطأ في تشغيل محرك Replicate AI',
         details: prediction
       });
     }
 
-    const predictionId = prediction.id;
+    console.log(`[3/3] جاري رندرة مشهد الفيديو (ID: ${prediction.id})...`);
 
-    // المتابعة الدورية حتى تنتهي المعالجة وتجهيز رابط الـ MP4
+    // المتابعة الدورية حتى تنتهي رندرة الفيديو بالكامل
     let attempts = 0;
-    while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && attempts < 40) {
-      await new Promise(r => setTimeout(r, 3000));
+    while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && attempts < 50) {
+      await new Promise(resolve => setTimeout(resolve, 3500));
       attempts++;
 
-      const checkResp = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
+      const checkResp = await fetch(`https://api.replicate.com/v1/predictions/${prediction.id}`, {
         headers: { 'Authorization': `Bearer ${REPLICATE_API_TOKEN}` }
       });
       prediction = await checkResp.json();
+      console.log(`Status attempt ${attempts}: ${prediction.status}`);
     }
 
     if (prediction.status === 'succeeded' && prediction.output) {
-      const outputVideo = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
-      return res.json({ success: true, videoUrl: outputVideo });
+      const generatedVideoUrl = Array.isArray(prediction.output) ? prediction.output[0] : prediction.output;
+      return res.json({
+        success: true,
+        videoUrl: generatedVideoUrl,
+        audioUrl: audioDataUri,
+        productName: productName,
+        offer: offer
+      });
     } else {
       return res.status(500).json({
-        error: prediction.error || 'فشلت رندرة الفيديو السينمائي في Replicate',
+        error: prediction.error || 'فشلت معالجة الفيديو في Replicate، يرجى المحاولة بصورة ذات دقة واضحة.',
         details: prediction
       });
     }
 
-  } catch (err) {
-    console.error('Replicate Error:', err);
-    res.status(500).json({ error: err.message });
+  } catch (error) {
+    console.error('Master Server Error:', error);
+    return res.status(500).json({ error: error.message });
   }
 });
 
-// 3. بروكسي التنزيل المباشر للملف بدون مشاكل تصاريح الروابط
+// بروكسي التنزيل المباشر
 app.get('/api/download-proxy', async (req, res) => {
   try {
     const { url, filename } = req.query;
@@ -132,7 +139,7 @@ app.get('/api/download-proxy', async (req, res) => {
     const videoResp = await fetch(url);
     if (!videoResp.ok) return res.status(videoResp.status).send('Video fetch error');
 
-    res.setHeader('Content-Disposition', `attachment; filename="${filename || 'Fareq_Master_Ad.mp4'}"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${filename || 'Product_Commercial_Ad.mp4'}"`);
     res.setHeader('Content-Type', 'video/mp4');
 
     const arrayBuffer = await videoResp.arrayBuffer();
@@ -143,5 +150,5 @@ app.get('/api/download-proxy', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Fareq AI Ultimate SaaS listening on port ${PORT}`);
+  console.log(`Fareq AI Production Engine online on port ${PORT}`);
 });
