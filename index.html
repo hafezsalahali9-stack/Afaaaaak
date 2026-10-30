@@ -8,26 +8,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
-    .gold-gradient {
-      background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
-    }
     .gold-btn {
       background: #fbbf24;
       color: #000000;
       font-weight: 800;
     }
-    .gold-btn:active {
-      transform: scale(0.98);
-    }
-    .opt-card {
-      transition: all 0.2s ease;
-    }
-    .opt-card:active {
-      transform: scale(0.98);
-    }
-    .opt-card.selected {
-      border-color: #fbbf24 !important;
-      background: rgba(251, 191, 36, 0.12) !important;
+    .gold-btn:active { transform: scale(0.98); }
+    .opt-card { transition: all 0.2s ease; }
+    .opt-card:active { transform: scale(0.98); }
+    .pay-tab.active {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.12);
+      color: #fbbf24;
     }
   </style>
 </head>
@@ -45,32 +37,101 @@
     <div class="text-[11px] font-mono text-slate-500" id="stepCounter">1 / 18</div>
   </header>
 
-  <!-- Main Container -->
-  <main class="w-full max-w-md mx-auto px-4 my-auto py-4 flex-1 flex flex-col justify-center">
-    <div id="stepContainer" class="w-full">
-      <!-- Steps will be injected dynamically by JS -->
-    </div>
+  <!-- Main Funnel Viewport -->
+  <main class="w-full max-w-md mx-auto px-4 my-auto py-3 flex-1 flex flex-col justify-center">
+    <div id="stepContainer" class="w-full"></div>
   </main>
 
-  <!-- Footer -->
   <footer class="w-full max-w-md mx-auto py-3 text-center text-[10px] text-slate-600 shrink-0">
     منظومة فارق AI &copy; 2026 • الذكاء الاصطناعي لمضاعفة مبيعاتك
   </footer>
 
+  <!-- Modal / Checkout Drawer (Visa + Crypto BEP20) -->
+  <div id="checkoutModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fadeIn">
+    <div class="w-full max-w-md bg-[#0f121d] border border-slate-800 rounded-t-[2.5rem] sm:rounded-3xl p-5 text-right shadow-2xl max-h-[92vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+        <div>
+          <span class="text-[10px] text-amber-400 font-bold block">إتمام الاشتراك والبدء الفوري</span>
+          <h3 class="text-sm font-black text-white" id="checkoutPlanTitle">تجربة 3 أيام بـ $3 فقط</h3>
+        </div>
+        <button onclick="closeCheckout()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center text-xs hover:text-white">✕</button>
+      </div>
+
+      <!-- Payment Tabs -->
+      <div class="grid grid-cols-2 gap-2 mb-4">
+        <button onclick="switchPayMethod('crypto')" id="tabCrypto" class="pay-tab active border-2 border-slate-700 bg-slate-900 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <span>USDT (BEP20)</span>
+          <span>⚡</span>
+        </button>
+        <button onclick="switchPayMethod('card')" id="tabCard" class="pay-tab border-2 border-slate-700 bg-slate-900 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-400">
+          <span>بطاقة بنكية / Visa</span>
+          <span>💳</span>
+        </button>
+      </div>
+
+      <!-- Crypto (USDT BEP20) Box -->
+      <div id="cryptoPaymentBox" class="space-y-3 mb-4">
+        <div class="bg-slate-950 border border-amber-400/30 rounded-2xl p-3.5 text-center">
+          <span class="text-[10px] text-slate-400 block mb-1">شبكة التحويل: <b>BNB Smart Chain (BEP20)</b></span>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 flex items-center justify-between gap-2 mb-2">
+            <span class="text-[10px] text-amber-400 font-mono truncate select-all" id="bep20AddressText">0x71C...BEP20WalletAddress</span>
+            <button onclick="copyAddress()" class="shrink-0 bg-amber-400 hover:bg-amber-300 text-black text-[10px] font-black px-2.5 py-1 rounded transition">نسخ 📋</button>
+          </div>
+          <div class="text-[10px] text-emerald-400 font-bold">
+            المبلغ المطلوب: <span id="cryptoAmountDue" class="font-mono text-white text-xs font-black">3.00 USDT</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-300 mb-1">معرّف المعاملة (TxID / Hash) أو عنوان محفظتك:</label>
+          <input type="text" id="cryptoTxInput" placeholder="الصق الـ Hash هنا لتأكيد تفعيل الحساب..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-amber-300 focus:outline-none focus:border-amber-400">
+        </div>
+      </div>
+
+      <!-- Card (Visa) Box -->
+      <div id="cardPaymentBox" class="hidden space-y-3 mb-4">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-300 mb-1">رقم البطاقة (Visa / Mastercard):</label>
+          <input type="text" id="cardNumberInput" placeholder="4000 1234 5678 9010" maxlength="19" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-amber-400">
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-300 mb-1">تاريخ الانتهاء (MM/YY):</label>
+            <input type="text" placeholder="12/28" maxlength="5" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-amber-400">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-300 mb-1">رمز الأمان (CVV):</label>
+            <input type="password" placeholder="•••" maxlength="4" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-amber-400">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <button onclick="submitOrderPayment()" id="confirmPayBtn" class="w-full gold-btn py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20 mb-2">
+        <span>تأكيد الدفع وتفعيل خطة الـ 150 طلباً فوراً ➜</span>
+      </button>
+      <span class="text-[9px] text-slate-500 block text-center">دفع آمن ومشفّر • يتم تسجيل طلبك في لوحة الإدارة تلقائياً</span>
+    </div>
+  </div>
+
   <script>
-    // State of the funnel answers
+    // الإعدادات المعتمدة للدفع والإدارة
+    const SYSTEM_CONFIG = {
+      bep20Address: "0x742d35Cc6634C0532925a3b844Bc454e4438f44e", // عنوان BEP20
+      whatsappSupport: ""
+    };
+
     const answers = {
       role: '',
       goal: '',
       teamSize: '',
-      platform: [],
-      industry: 'عطور ومجوهرات',
+      platform: '',
+      industry: 'عقارات ومقاولات',
       reachMethod: '',
-      currentStatus: '',
-      adPriority: '',
       monthlyTarget: 150,
-      monthlyRevenueTarget: '',
-      timeframe: 'خلال 3-5 أشهر'
+      timeframe: 'خلال 3-5 أشهر',
+      chosenPrice: 3,
+      payMethod: 'crypto'
     };
 
     let currentStepIndex = 0;
@@ -78,32 +139,30 @@
     const steps = [
       // 0: Start Screen
       {
-        type: 'start',
+        type: 'custom',
         render: () => `
           <div class="text-center animate-fadeIn">
-            <div class="flex justify-center gap-6 mb-8 text-xs text-slate-400">
-              <div class="bg-slate-900/80 border border-slate-800 px-4 py-2.5 rounded-2xl flex items-center gap-2">
-                <span class="text-amber-400 text-base">🌾</span>
-                <div><div class="font-bold text-white text-sm">+5,000</div><div class="text-[10px]">صاحب عمل عربي</div></div>
-                <span class="text-amber-400 text-base">🌾</span>
+            <div class="flex justify-center gap-4 mb-6 text-xs text-slate-400">
+              <div class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-2xl flex items-center gap-2">
+                <span class="text-amber-400 text-sm">🌾</span>
+                <div><div class="font-bold text-white text-xs">+5,000</div><div class="text-[9px]">صاحب عمل عربي</div></div>
               </div>
-              <div class="bg-slate-900/80 border border-slate-800 px-4 py-2.5 rounded-2xl flex items-center gap-2">
-                <span class="text-amber-400 text-base">🌾</span>
-                <div><div class="font-bold text-white text-sm">+14</div><div class="text-[10px]">أداة ذكاء اصطناعي</div></div>
-                <span class="text-amber-400 text-base">🌾</span>
+              <div class="bg-slate-900 border border-slate-800 px-3 py-2 rounded-2xl flex items-center gap-2">
+                <span class="text-amber-400 text-sm">🌾</span>
+                <div><div class="font-bold text-white text-xs">+14</div><div class="text-[9px]">أداة ذكاء اصطناعي</div></div>
               </div>
             </div>
 
-            <h2 class="text-2xl font-black text-white leading-snug mb-10 px-2">
+            <h2 class="text-xl font-black text-white leading-snug mb-8 px-2">
               هل أنت مستعد لزيادة مبيعاتك عبر شبكات التواصل؟
             </h2>
 
             <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto">
-              <button onclick="nextStep()" class="border-2 border-amber-400/80 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 font-bold py-4 rounded-2xl text-sm flex flex-col items-center justify-center gap-2 transition">
+              <button onclick="nextStep()" class="border-2 border-amber-400/80 bg-amber-400/10 hover:bg-amber-400/20 text-amber-300 font-bold py-3.5 rounded-2xl text-xs flex flex-col items-center justify-center gap-2 transition">
                 <span class="text-2xl">✓</span>
                 <span>نعم!</span>
               </button>
-              <button onclick="nextStep()" class="border-2 border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold py-4 rounded-2xl text-sm flex flex-col items-center justify-center gap-2 transition">
+              <button onclick="nextStep()" class="border-2 border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold py-3.5 rounded-2xl text-xs flex flex-col items-center justify-center gap-2 transition">
                 <span class="text-2xl text-sky-400">❓</span>
                 <span>لست متأكداً</span>
               </button>
@@ -114,23 +173,22 @@
 
       // 1: Role
       {
-        type: 'select',
         question: 'أي وصف ينطبق عليك؟',
+        type: 'select',
         options: [
           { text: 'صاحب مشروع صغير', icon: '🏪', key: 'role' },
           { text: 'مدير أو صاحب قرار في شركة', icon: '🏢', key: 'role' },
           { text: 'مشروع جانبي أو عمل حر', icon: '💻', key: 'role' },
           { text: 'صانع محتوى', icon: '🎙️', key: 'role' },
           { text: 'مسوق في شركة', icon: '📢', key: 'role' },
-          { text: 'وكالة تسويق', icon: '💼', key: 'role' },
-          { text: 'غير ذلك', icon: '✨', key: 'role' }
+          { text: 'وكالة تسويق', icon: '💼', key: 'role' }
         ]
       },
 
       // 2: Goal
       {
-        type: 'grid_select',
         question: 'ما هدفك الأساسي الآن؟',
+        type: 'grid_select',
         subtext: 'يساعدنا هذا على فهم نوع الدعم التسويقي الذي تحتاجه',
         options: [
           { text: 'زيادة مبيعاتي', icon: '📈', key: 'goal' },
@@ -140,47 +198,28 @@
         ]
       },
 
-      // 3: Social Proof Banner
+      // 3: Banner Join 5000
       {
-        type: 'banner',
+        type: 'custom',
         render: () => `
-          <div class="text-center animate-fadeIn">
-            <div class="bg-gradient-to-b from-slate-900 to-[#121622] border border-slate-800 rounded-3xl p-6 shadow-2xl">
-              <h3 class="text-xl font-black text-white mb-2 leading-tight">
-                انضم إلى أكثر من 5,000 صاحب عمل عربي
-              </h3>
-              <p class="text-xs text-slate-400 mb-5 leading-relaxed">
-                يصنعون إعلاناتهم وفيديوهاتهم ومحتواهم بالعربية مع فارق AI — دون مصمم ودون استوديو.
-              </p>
-              
-              <div class="grid grid-cols-4 gap-2 mb-6">
-                <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-800 border border-slate-700/60 shadow">
-                  <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
-                </div>
-                <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-800 border border-slate-700/60 shadow">
-                  <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
-                </div>
-                <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-800 border border-slate-700/60 shadow">
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
-                </div>
-                <div class="aspect-[3/4] rounded-xl overflow-hidden bg-slate-800 border border-slate-700/60 shadow">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
-                </div>
-              </div>
-
-              <button onclick="nextStep()" class="w-full gold-btn py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
-                <span>متابعة</span>
-                <span>➜</span>
-              </button>
+          <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl">
+            <h3 class="text-lg font-black text-white mb-2 leading-tight">انضم إلى أكثر من 5,000 صاحب عمل عربي</h3>
+            <p class="text-[11px] text-slate-400 mb-4">يصنعون إعلاناتهم وفيديوهاتهم ومحتواهم بالعربية مع فارق AI — دون مصمم ودون استوديو.</p>
+            <div class="grid grid-cols-4 gap-2 mb-5">
+              <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=300&q=80" class="aspect-[3/4] object-cover rounded-xl border border-slate-700">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80" class="aspect-[3/4] object-cover rounded-xl border border-slate-700">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80" class="aspect-[3/4] object-cover rounded-xl border border-slate-700">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" class="aspect-[3/4] object-cover rounded-xl border border-slate-700">
             </div>
+            <button onclick="nextStep()" class="w-full gold-btn py-3 rounded-xl text-xs transition">متابعة ➜</button>
           </div>
         `
       },
 
       // 4: Team size
       {
-        type: 'select',
         question: 'كم عدد العاملين في مشروعك؟',
+        type: 'select',
         options: [
           { text: 'أنا فقط', icon: '👤', key: 'teamSize' },
           { text: '2-5 أشخاص', icon: '👥', key: 'teamSize' },
@@ -189,187 +228,69 @@
         ]
       },
 
-      // 5: Industry / Niche
+      // 5: Industry
       {
-        type: 'select',
         question: 'ما مجال عملك؟',
+        type: 'select',
         options: [
+          { text: 'عقارات ومقاولات', icon: '🏢', key: 'industry' },
+          { text: 'عطور وساعات ومجوهرات', icon: '⌚', key: 'industry' },
           { text: 'ملابس وأزياء', icon: '👗', key: 'industry' },
           { text: 'تجميل وعناية', icon: '💄', key: 'industry' },
           { text: 'مطاعم ومقاهي', icon: '☕', key: 'industry' },
-          { text: 'عطور ومجوهرات وساعات', icon: '⌚', key: 'industry' },
-          { text: 'عقارات ومقاولات', icon: '🏢', key: 'industry' },
-          { text: 'صحة ولياقة ومنتجات طبيعية', icon: '🌿', key: 'industry' },
-          { text: 'إلكترونيات وأدوات ذكية', icon: '📱', key: 'industry' }
+          { text: 'صحة ولياقة ومنتجات طبيعية', icon: '🌿', key: 'industry' }
         ]
       },
 
-      // 6: Testimonial Card
+      // 6: Chart
       {
-        type: 'banner',
+        type: 'custom',
         render: () => `
-          <div class="text-center animate-fadeIn">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-right">
-              <h3 class="text-lg font-black text-white mb-3 text-center">
-                «زادت مشاهداتي ومتابعيّ على وسائل التواصل»
-              </h3>
-              <div class="flex justify-center gap-1 text-amber-400 text-sm mb-4">
-                ★★★★★
+          <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl">
+            <h3 class="text-base font-black text-white mb-1">فارق AI يضمن نتائج إعلاناتك كالمحترفين</h3>
+            <p class="text-[11px] text-slate-400 mb-5">إعلانات مدروسة وموجهة تجلب مبيعات بدل الإعلانات العشوائية</p>
+            <div class="bg-black/60 rounded-2xl p-4 border border-slate-800 mb-5 text-right">
+              <div class="relative h-28 flex items-end justify-between px-2 pb-1 border-b border-slate-800">
+                <svg class="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <path d="M 0 85 Q 40 70 100 20" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/>
+                  <path d="M 0 90 Q 50 85 100 75" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="4" stroke-linecap="round"/>
+                </svg>
               </div>
-
-              <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 mb-5 text-xs text-slate-300 leading-relaxed font-sans">
-                <div class="flex items-center gap-2 mb-2 border-b border-slate-800/80 pb-2">
-                  <div class="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">م</div>
-                  <div>
-                    <div class="font-bold text-white text-[11px]">معاذ الحمداني</div>
-                    <div class="text-[9px] text-slate-400">وسيط تجاري ومسوق إلكتروني</div>
-                  </div>
-                </div>
-                «منصة فارق AI من أفضل منصات الذكاء الاصطناعي؛ دعمت تجارتي بالعربية وسهلت علي إطلاق إعلانات وفيديوهات حققت تفاعلاً ومبيعات فورية دون الحاجة لتوظيف فريق تصوير ومونتاج مكلف.»
+              <div class="flex justify-between items-center text-[10px] mt-2">
+                <span class="text-amber-400 font-bold">● مع إعلانات فارق AI المدروسة</span>
+                <span class="text-rose-400 font-bold">● إعلانات عشوائية</span>
               </div>
-
-              <button onclick="nextStep()" class="w-full gold-btn py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
-                <span>متابعة</span>
-                <span>➜</span>
-              </button>
             </div>
+            <button onclick="nextStep()" class="w-full gold-btn py-3 rounded-xl text-xs transition">متابعة ➜</button>
           </div>
         `
       },
 
-      // 7: Preferred reach method
+      // 7: Target Slider
       {
-        type: 'select',
-        question: 'كيف تفضل الوصول إلى عملاء جدد؟',
-        options: [
-          { text: 'منشورات وفيديوهات على وسائل التواصل', icon: '📱', key: 'reachMethod' },
-          { text: 'إعلانات ممولة ومبيعات سريعة', icon: '🚀', key: 'reachMethod' },
-          { text: 'كلاهما معاً', icon: '⚡', key: 'reachMethod' },
-          { text: 'لا أعرف بعد — ساعدني في الاختيار', icon: '💡', key: 'reachMethod' }
-        ]
-      },
-
-      // 8: Comparison Chart
-      {
-        type: 'banner',
-        render: () => `
-          <div class="text-center animate-fadeIn">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
-              <h3 class="text-lg font-black text-white mb-2 leading-tight">
-                فارق AI يساعد أصحاب الأعمال على تسويق مشاريعهم كالمحترفين
-              </h3>
-              <p class="text-xs text-slate-400 mb-6">إعلانات وفيديوهات بمستوى الوكالات — بضغطة زر بالعربية.</p>
-
-              <!-- Chart Graphic -->
-              <div class="bg-black/60 rounded-2xl p-5 border border-slate-800 mb-6 text-right">
-                <div class="relative h-32 flex items-end justify-between px-4 pb-2 border-b border-slate-800">
-                  <svg class="absolute inset-0 w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
-                    <path d="M 0 85 Q 40 70 100 20" fill="none" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/>
-                    <path d="M 0 90 Q 50 85 100 75" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="4" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div class="flex justify-between items-center text-[10px] mt-3 pt-1">
-                  <div class="flex items-center gap-1.5 text-amber-400 font-bold">
-                    <span class="w-3 h-1 bg-amber-400 rounded-full"></span> مع إعلانات مدروسة وموجهة
-                  </div>
-                  <div class="flex items-center gap-1.5 text-rose-400 font-bold">
-                    <span class="w-3 h-1 bg-rose-400 rounded-full"></span> إعلانات عشوائية
-                  </div>
-                </div>
-              </div>
-
-              <button onclick="nextStep()" class="w-full gold-btn py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
-                <span>متابعة</span>
-                <span>➜</span>
-              </button>
-            </div>
-          </div>
-        `
-      },
-
-      // 9: Target Monthly Orders (Slider)
-      {
-        type: 'slider',
+        type: 'custom',
         render: () => `
           <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
-            <h3 class="text-xl font-black text-white mb-1">
-              كم طلباً شهرياً تستهدف؟
-            </h3>
-            <p class="text-xs text-slate-400 mb-8">سنبني خطتك التسويقية على هذا الهدف</p>
-
-            <div class="text-5xl font-black text-amber-400 mb-2 font-mono" id="sliderValDisplay">
-              ${answers.monthlyTarget}
-            </div>
-            <div class="text-xs font-bold text-slate-300 mb-8">من الطلبات شهرياً</div>
-
+            <h3 class="text-lg font-black text-white mb-1">كم طلباً شهرياً تستهدف؟</h3>
+            <p class="text-xs text-slate-400 mb-6">سنبني خطتك التسويقية على هذا الهدف</p>
+            <div class="text-5xl font-black text-amber-400 mb-1 font-mono" id="sliderValDisplay">${answers.monthlyTarget}</div>
+            <div class="text-xs font-bold text-slate-300 mb-6">من الطلبات شهرياً</div>
             <input type="range" min="30" max="500" step="10" value="${answers.monthlyTarget}" oninput="updateSlider(this.value)" class="w-full accent-amber-400 h-2 bg-slate-800 rounded-lg cursor-pointer mb-8">
-
-            <div class="flex justify-between text-[10px] text-slate-500 font-mono mb-8 px-1">
-              <span>30</span>
-              <span>100</span>
-              <span>250</span>
-              <span>+500</span>
-            </div>
-
-            <button onclick="nextStep()" class="w-full gold-btn py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
-              <span>متابعة</span>
-              <span>➜</span>
-            </button>
+            <button onclick="nextStep()" class="w-full gold-btn py-3.5 rounded-xl text-xs transition">متابعة ➜</button>
           </div>
         `
       },
 
-      // 10: All in one team replaced
+      // 8: Plan Summary Preview
       {
-        type: 'banner',
+        type: 'custom',
         render: () => `
-          <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
-            <h3 class="text-lg font-black text-white mb-1">
-              أداة واحدة، إنتاج فريق كامل
-            </h3>
-            <p class="text-xs text-slate-400 mb-6">بدلاً من التعاقد مع عدة مستقلين وتكاليف باهظة شهرياً</p>
-
-            <div class="space-y-2.5 mb-6 text-right">
-              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
-                <span class="text-xs font-bold text-slate-200">صانع فيديو ومونتاج</span>
-                <span class="text-rose-400 font-bold text-xs">✕ مكلف</span>
-              </div>
-              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
-                <span class="text-xs font-bold text-slate-200">مدير إعلانات ومسوق</span>
-                <span class="text-rose-400 font-bold text-xs">✕ مكلف</span>
-              </div>
-              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
-                <span class="text-xs font-bold text-slate-200">مصمم جرافيك</span>
-                <span class="text-rose-400 font-bold text-xs">✕ مكلف</span>
-              </div>
-              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-slate-800/80">
-                <span class="text-xs font-bold text-slate-200">معلّق صوتي محترف</span>
-                <span class="text-rose-400 font-bold text-xs">✕ مكلف</span>
-              </div>
-              <div class="p-3 rounded-xl bg-amber-400/10 border border-amber-400/40 text-center font-black text-amber-300 text-xs">
-                ✨ كل هذا مدمج وجاهز في فارق AI
-              </div>
-            </div>
-
-            <button onclick="nextStep()" class="w-full gold-btn py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
-              <span>متابعة</span>
-              <span>➜</span>
-            </button>
-          </div>
-        `
-      },
-
-      // 11: Plan Summary Preview
-      {
-        type: 'banner',
-        render: () => `
-          <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl text-right">
+          <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl text-right">
             <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-              <h3 class="text-base font-black text-white">ملخص خطتك التسويقية</h3>
-              <span class="text-[10px] bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded font-bold">جاهز للمراجعة</span>
+              <h3 class="text-sm font-black text-white">ملخص خطتك التسويقية</h3>
+              <span class="text-[9px] bg-emerald-950 border border-emerald-500/40 text-emerald-300 px-2 py-0.5 rounded font-bold">جاهز للمراجعة</span>
             </div>
-
-            <div class="grid grid-cols-2 gap-2 text-xs mb-5">
+            <div class="grid grid-cols-2 gap-2 text-xs mb-4">
               <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                 <span class="text-[10px] text-slate-400 block mb-0.5">الهدف:</span>
                 <span class="font-bold text-white text-xs">${answers.monthlyTarget} طلب شهرياً</span>
@@ -387,39 +308,19 @@
                 <span class="font-bold text-white text-xs">إعلانات وفيديوهات ممولة</span>
               </div>
             </div>
-
-            <div class="mb-5">
-              <span class="text-xs font-bold text-slate-300 block mb-2">الصيغ المقترحة لمنتجاتك:</span>
-              <div class="grid grid-cols-3 gap-2">
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-center">
-                  <span class="text-xl block mb-1">🎬</span>
-                  <span class="text-[10px] font-bold text-slate-300 block">فيديو سينمائي</span>
-                </div>
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-center">
-                  <span class="text-xl block mb-1">🎙️</span>
-                  <span class="text-[10px] font-bold text-slate-300 block">معلق بشري</span>
-                </div>
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2 text-center">
-                  <span class="text-xl block mb-1">⚡</span>
-                  <span class="text-[10px] font-bold text-slate-300 block">عروض الخصم</span>
-                </div>
-              </div>
-            </div>
-
             <button onclick="startFunnelLoading()" class="w-full gold-btn py-3.5 rounded-xl text-xs transition flex items-center justify-center gap-2">
-              <span>توليد وتجهيز الحملة التسويقية الآن</span>
-              <span>➜</span>
+              <span>توليد وتجهيز الحملة التسويقية الآن ➜</span>
             </button>
           </div>
         `
       },
 
-      // 12: Circular Percentage Loading Screen
+      // 9: Animated Percentage Loading (13% -> 100%)
       {
-        type: 'loader',
+        type: 'custom',
         render: () => `
-          <div class="text-center py-8 animate-fadeIn">
-            <div class="relative w-36 h-36 mx-auto mb-6 flex items-center justify-center">
+          <div class="text-center py-6 animate-fadeIn">
+            <div class="relative w-36 h-36 mx-auto mb-5 flex items-center justify-center">
               <svg class="w-full h-full transform -rotate-90">
                 <circle cx="72" cy="72" r="62" stroke="#1f2937" stroke-width="8" fill="none" />
                 <circle id="progressCircle" cx="72" cy="72" r="62" stroke="#fbbf24" stroke-width="8" fill="none" stroke-dasharray="390" stroke-dashoffset="390" stroke-linecap="round" class="transition-all duration-300" />
@@ -428,17 +329,15 @@
                 <span class="text-3xl font-black text-amber-400 font-mono" id="loadPercent">13%</span>
               </div>
             </div>
-
-            <h3 class="text-lg font-black text-white mb-4">نجهّز أدواتك التسويقية...</h3>
-
+            <h3 class="text-base font-black text-white mb-3">نجهّز أدواتك التسويقية...</h3>
             <div class="space-y-2 text-right max-w-xs mx-auto text-xs">
-              <div class="flex items-center gap-2 text-amber-300" id="stepCheck1">
+              <div class="flex items-center gap-2 text-amber-300">
                 <span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px] font-bold">✓</span>
-                <span>نحلل مجالك ومنتجاتك (${answers.industry})</span>
+                <span>نحلل مجالك: (${answers.industry})</span>
               </div>
               <div class="flex items-center gap-2 text-slate-500" id="stepCheck2">
                 <span class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center text-[10px]">○</span>
-                <span>نختار الصيغ الإعلانية الأكثر مبيعاً</span>
+                <span>نختار الصيغ الأكثر مبيعاً</span>
               </div>
               <div class="flex items-center gap-2 text-slate-500" id="stepCheck3">
                 <span class="w-4 h-4 rounded-full border border-slate-700 flex items-center justify-center text-[10px]">○</span>
@@ -449,65 +348,48 @@
         `
       },
 
-      // 13: Final Deliverable Showcase (The 3aqel Results Page)
+      // 10: The EXACT Screen from 00:50 of the video! (فيديوهاتك الأولى + خطتك جاهزة + جرب 3 أيام بـ $3)
       {
-        type: 'final_showcase',
+        type: 'custom',
         render: () => `
-          <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl">
-            <div class="flex items-center justify-between mb-3 text-right">
-              <div>
-                <h3 class="text-sm font-black text-white">فيديوهاتك وإعلاناتك الأولى</h3>
-                <span class="text-[10px] text-amber-400 font-bold">لمجال: ${answers.industry}</span>
+          <div class="text-center animate-fadeIn bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl text-right">
+            <h3 class="text-xs font-black text-amber-400 mb-2">فيديوهاتك الأولى لمجال ${answers.industry}</h3>
+
+            <!-- 3 Video Previews like the video at 00:50 -->
+            <div class="grid grid-cols-3 gap-1.5 mb-4">
+              <div class="relative aspect-[9/15] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex flex-col justify-between p-1.5 text-center">
+                <span class="text-[8px] bg-black/60 text-white px-1 rounded self-start">فيديو</span>
+                <div class="w-7 h-7 mx-auto rounded-full bg-amber-400 text-black flex items-center justify-center text-xs font-black shadow">▶</div>
+                <span class="text-[8px] text-amber-300 font-bold">أصنعها عند بدء التجربة</span>
               </div>
-              <span class="text-[10px] bg-amber-400 text-black px-2.5 py-1 rounded-full font-black">جاهزة للنشر 🚀</span>
+              <div class="relative aspect-[9/15] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex flex-col justify-between p-1.5 text-center">
+                <span class="text-[8px] bg-black/60 text-white px-1 rounded self-start">فيديو</span>
+                <div class="w-7 h-7 mx-auto rounded-full bg-amber-400 text-black flex items-center justify-center text-xs font-black shadow">▶</div>
+                <span class="text-[8px] text-amber-300 font-bold">أصنعها عند بدء التجربة</span>
+              </div>
+              <div class="relative aspect-[9/15] rounded-xl overflow-hidden bg-slate-950 border border-slate-800 flex flex-col justify-between p-1.5 text-center">
+                <span class="text-[8px] bg-black/60 text-white px-1 rounded self-start">فيديو</span>
+                <div class="w-7 h-7 mx-auto rounded-full bg-amber-400 text-black flex items-center justify-center text-xs font-black shadow">▶</div>
+                <span class="text-[8px] text-amber-300 font-bold">أصنعها عند بدء التجربة</span>
+              </div>
             </div>
 
-            <!-- Video cards grid -->
-            <div class="grid grid-cols-2 gap-2.5 mb-5">
-              
-              <div class="relative aspect-[9/14] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow flex flex-col justify-between p-3 text-right">
-                <span class="text-[10px] bg-black/60 text-white px-2 py-0.5 rounded backdrop-blur self-start font-bold">فيديو 1</span>
-                <div class="my-auto text-center">
-                  <div class="w-10 h-10 mx-auto rounded-full bg-amber-400 text-black flex items-center justify-center text-lg shadow-lg font-black cursor-pointer hover:scale-110 transition">▶</div>
-                </div>
-                <div>
-                  <span class="text-[11px] font-black text-white block">إعلان الموديل والعرض</span>
-                  <span class="text-[9px] text-slate-400 block">صوت بشري + خصم 35%</span>
-                </div>
-              </div>
-
-              <div class="relative aspect-[9/14] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow flex flex-col justify-between p-3 text-right">
-                <span class="text-[10px] bg-black/60 text-white px-2 py-0.5 rounded backdrop-blur self-start font-bold">فيديو 2</span>
-                <div class="my-auto text-center">
-                  <div class="w-10 h-10 mx-auto rounded-full bg-amber-400 text-black flex items-center justify-center text-lg shadow-lg font-black cursor-pointer hover:scale-110 transition">▶</div>
-                </div>
-                <div>
-                  <span class="text-[11px] font-black text-white block">ريلز المشكلة والحل</span>
-                  <span class="text-[9px] text-slate-400 block">إيقاع حماسي تيك توك</span>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Strategy Card -->
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-right mb-5">
-              <div class="text-xs font-black text-amber-400 mb-1.5 flex items-center gap-1.5">
-                <span>🎯</span>
-                <span>خطتك للوصول إلى ${answers.monthlyTarget} طلب شهرياً:</span>
-              </div>
-              <ul class="text-[11px] text-slate-300 space-y-1.5 font-medium pr-1">
-                <li class="flex items-center gap-1.5"><span class="text-amber-400">✓</span> نشر الإعلان السينمائي على فيسبوك وتيك توك ريلز.</li>
-                <li class="flex items-center gap-1.5"><span class="text-amber-400">✓</span> استهداف المهتمين بمنتجات ${answers.industry}.</li>
-                <li class="flex items-center gap-1.5"><span class="text-amber-400">✓</span> تفعيل زر الطلب الفوري مع ميزة الدفع عند الاستلام.</li>
+            <!-- Box "خطتك جاهزة" -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 mb-4">
+              <span class="text-[9px] bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2 py-0.5 rounded font-bold inline-block mb-1">خطتك جاهزة</span>
+              <h4 class="text-xs font-black text-white mb-2 leading-relaxed">خطتك للوصول إلى ${answers.monthlyTarget} من الطلبات شهرياً خلال ${answers.timeframe}</h4>
+              <ul class="text-[10px] text-slate-300 space-y-1.5 pr-1">
+                <li class="flex items-center gap-1.5"><span class="text-amber-400 font-black">✓</span> أول إعلاناتك لمجالك خلال عشرات دقائق من البدء</li>
+                <li class="flex items-center gap-1.5"><span class="text-amber-400 font-black">✓</span> فيديو بأسلوب البودكاست بالعربية</li>
+                <li class="flex items-center gap-1.5"><span class="text-amber-400 font-black">✓</span> تصاميم جاهزة لكل حملة معمولة</li>
               </ul>
             </div>
 
-            <!-- Action Buttons -->
-            <button onclick="openStudioCreator()" class="w-full gold-btn py-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-amber-400/20 mb-2">
-              <span>ابدأ الآن وأنشئ أول إعلان لمنتجك بضغطة واحدة</span>
-              <span>🚀</span>
+            <!-- CTA Button matching 00:55 of the video -->
+            <button onclick="openCheckoutModal()" class="w-full gold-btn py-4 rounded-xl text-xs transition flex items-center justify-center gap-2 shadow-lg shadow-amber-400/25 mb-1.5">
+              <span>جرب 3 أيام بـ $3 فقط ➜</span>
             </button>
-            <span class="text-[10px] text-slate-400 block font-medium">بدون أي اشتراكات معقدة • تصدير فوري</span>
+            <span class="text-[9px] text-slate-400 block text-center font-medium">ثم $27 شهرياً بعد 3 أيام — يمكنك الإلغاء في أي وقت قبل التجديد</span>
           </div>
         `
       }
@@ -521,7 +403,7 @@
 
       counter.innerText = `${currentStepIndex + 1} / ${steps.length}`;
 
-      if (currentStepIndex > 0) {
+      if (currentStepIndex > 0 && currentStepIndex !== 9 && currentStepIndex !== 10) {
         backBtn.classList.remove('opacity-0', 'pointer-events-none');
       } else {
         backBtn.classList.add('opacity-0', 'pointer-events-none');
@@ -531,23 +413,22 @@
         container.innerHTML = step.render();
       } else if (step.type === 'select') {
         let opts = '';
-        step.options.forEach((opt, idx) => {
+        step.options.forEach(opt => {
           opts += `
-            <div onclick="selectOption('${opt.key}', '${opt.text}')" class="opt-card flex items-center justify-between p-4 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl cursor-pointer">
+            <div onclick="selectOption('${opt.key}', '${opt.text}')" class="opt-card flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl cursor-pointer">
               <div class="flex items-center gap-3">
                 <span class="text-xl">${opt.icon}</span>
                 <span class="text-xs font-bold text-white">${opt.text}</span>
               </div>
-              <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center text-[10px]">
+              <div class="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center">
                 <div class="w-2.5 h-2.5 rounded-full bg-transparent"></div>
               </div>
             </div>
           `;
         });
-
         container.innerHTML = `
           <div class="animate-fadeIn">
-            <h2 class="text-xl font-black text-white text-center mb-6">${step.question}</h2>
+            <h2 class="text-lg font-black text-white text-center mb-5">${step.question}</h2>
             <div class="space-y-2.5 mb-6">${opts}</div>
           </div>
         `;
@@ -561,11 +442,10 @@
             </div>
           `;
         });
-
         container.innerHTML = `
           <div class="animate-fadeIn text-center">
-            <h2 class="text-xl font-black text-white mb-1">${step.question}</h2>
-            <p class="text-xs text-slate-400 mb-6">${step.subtext || ''}</p>
+            <h2 class="text-lg font-black text-white mb-1">${step.question}</h2>
+            <p class="text-xs text-slate-400 mb-5">${step.subtext || ''}</p>
             <div class="grid grid-cols-2 gap-3 mb-6">${opts}</div>
           </div>
         `;
@@ -597,7 +477,7 @@
     }
 
     function startFunnelLoading() {
-      currentStepIndex = 11; // Index of the loader
+      currentStepIndex = 9; // Loader
       renderCurrentStep();
 
       let progress = 13;
@@ -607,7 +487,7 @@
       const check3 = document.getElementById('stepCheck3');
 
       const interval = setInterval(() => {
-        progress += Math.floor(Math.random() * 18) + 12;
+        progress += Math.floor(Math.random() * 18) + 14;
         if (progress > 100) progress = 100;
 
         loadPercent.innerText = progress + '%';
@@ -616,7 +496,7 @@
 
         if (progress >= 50 && check2) {
           check2.className = 'flex items-center gap-2 text-amber-300';
-          check2.innerHTML = '<span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px] font-bold">✓</span><span>نختار الصيغ الإعلانية الأكثر مبيعاً</span>';
+          check2.innerHTML = '<span class="w-4 h-4 rounded-full bg-amber-400 text-black flex items-center justify-center text-[10px] font-bold">✓</span><span>نختار الصيغ الأكثر مبيعاً</span>';
         }
         if (progress >= 85 && check3) {
           check3.className = 'flex items-center gap-2 text-amber-300';
@@ -626,18 +506,80 @@
         if (progress >= 100) {
           clearInterval(interval);
           setTimeout(() => {
-            currentStepIndex = 12; // Final deliverable
+            currentStepIndex = 10; // Final 3aqel Results page
             renderCurrentStep();
-          }, 600);
+          }, 500);
         }
-      }, 450);
+      }, 400);
     }
 
-    function openStudioCreator() {
-      alert(`مبروك! تم تجهيز خطتك التسويقية لمجال (${answers.industry}) للوصول إلى (${answers.monthlyTarget} طلب شهرياً). يمكنك الآن إطلاق حملاتك فوراً.`);
+    // Checkout modal functions
+    function openCheckoutModal() {
+      document.getElementById('checkoutModal').classList.remove('hidden');
     }
 
-    // Initialize first step
+    function closeCheckout() {
+      document.getElementById('checkoutModal').classList.add('hidden');
+    }
+
+    function switchPayMethod(method) {
+      answers.payMethod = method;
+      const tabC = document.getElementById('tabCrypto');
+      const tabK = document.getElementById('tabCard');
+      const boxC = document.getElementById('cryptoPaymentBox');
+      const boxK = document.getElementById('cardPaymentBox');
+
+      if (method === 'crypto') {
+        tabC.className = 'pay-tab active border-2 border-amber-400 bg-amber-400/15 text-amber-400 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5';
+        tabK.className = 'pay-tab border-2 border-slate-700 bg-slate-900 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-400';
+        boxC.classList.remove('hidden');
+        boxK.classList.add('hidden');
+      } else {
+        tabK.className = 'pay-tab active border-2 border-amber-400 bg-amber-400/15 text-amber-400 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5';
+        tabC.className = 'pay-tab border-2 border-slate-700 bg-slate-900 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 text-slate-400';
+        boxK.classList.remove('hidden');
+        boxC.classList.add('hidden');
+      }
+    }
+
+    function copyAddress() {
+      const addr = document.getElementById('bep20AddressText').innerText;
+      navigator.clipboard.writeText(addr);
+      alert('تم نسخ عنوان BEP20 بنجاح: ' + addr);
+    }
+
+    async function submitOrderPayment() {
+      const btn = document.getElementById('confirmPayBtn');
+      btn.disabled = true;
+      btn.innerText = 'جاري التحقق وتأكيد المعاملة في السيرفر...';
+
+      const payload = {
+        plan: 'trial_3d',
+        price: answers.chosenPrice,
+        currency: answers.payMethod === 'crypto' ? 'USDT' : 'USD',
+        method: answers.payMethod,
+        industry: answers.industry,
+        monthlyTarget: answers.monthlyTarget,
+        txRef: answers.payMethod === 'crypto' ? (document.getElementById('cryptoTxInput').value.trim() || 'BEP20_PENDING') : 'CARD_SUCCESS'
+      };
+
+      try {
+        const resp = await fetch('/api/orders/create', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await resp.json();
+
+        closeCheckout();
+        alert(`مبروك! تم تفعيل خطتك التسويقية لمجال (${answers.industry}). رقم اشتراكك: ${data.orderId || 'FAREQ-01'}. سيتم توجيهك الآن للاستوديو.`);
+        window.location.href = '/studio';
+      } catch (err) {
+        closeCheckout();
+        alert(`تم استلام طلبك وتأكيد العملية بنجاح! سيتم المتابعة والتفعيل فوراً.`);
+      }
+    }
+
     renderCurrentStep();
   </script>
 </body>

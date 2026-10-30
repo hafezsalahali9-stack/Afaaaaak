@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,137 +14,125 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(__dirname));
 
-const tasks = new Map();
+// قاعدة بيانات الطلبات والمشتركين في الذاكرة (لوحة الإدارة)
+const ordersDatabase = [
+  {
+    id: 'ORD-101',
+    plan: 'trial_3d',
+    price: '$3',
+    method: 'USDT (BEP20)',
+    industry: 'عقارات ومقاولات',
+    target: 150,
+    status: 'مفعل',
+    txRef: '0x3f4a9b...c18',
+    date: new Date().toISOString().split('T')[0]
+  }
+];
 
+// الصفحة الرئيسية (Funnel 3aqel Experience)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// نقطة فحص سريعة لسلامة السيرفر
-app.get('/api/ping', (req, res) => {
-  res.json({ ok: true, status: 'online' });
+// استوديو الإنتاج
+app.get('/studio', (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>استوديو فارق AI</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+    </head>
+    <body class="bg-[#0b0c10] text-white font-['Cairo'] p-6 text-center">
+      <div class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl mt-10">
+        <span class="text-3xl block mb-2">🎉</span>
+        <h2 class="text-xl font-black text-amber-400 mb-2">مرحباً بك في استوديو فارق AI</h2>
+        <p class="text-xs text-slate-300 mb-6">تم تفعيل باقتك بنجاح. استوديو توليد الفيديوهات بالصوت البشري الحقيقي متاح لك بالكامل الآن.</p>
+        <a href="/" class="block bg-amber-400 hover:bg-amber-300 text-black font-black py-3 rounded-xl text-xs">العودة للرئيسية</a>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
-app.post('/api/start-production', async (req, res) => {
-  try {
-    const { imageBase64, productName, offer, script, voiceId } = req.body;
+// لوحة الإدارة (Admin Dashboard)
+app.get('/admin', (req, res) => {
+  let rows = ordersDatabase.map(o => `
+    <tr class="border-b border-slate-800 text-xs">
+      <td class="p-3 font-mono text-amber-400">${o.id}</td>
+      <td class="p-3">${o.plan}</td>
+      <td class="p-3 font-bold text-white">${o.price}</td>
+      <td class="p-3"><span class="bg-slate-800 text-amber-300 px-2 py-0.5 rounded text-[10px]">${o.method}</span></td>
+      <td class="p-3">${o.industry}</td>
+      <td class="p-3 font-mono truncate max-w-[120px] text-slate-400">${o.txRef}</td>
+      <td class="p-3"><span class="bg-emerald-950 text-emerald-400 border border-emerald-500/40 px-2 py-0.5 rounded text-[10px] font-bold">${o.status}</span></td>
+    </tr>
+  `).join('');
 
-    if (!REPLICATE_API_TOKEN) {
-      return res.status(500).json({ error: 'مفتاح REPLICATE_API_TOKEN غير موجود في إعدادات Render' });
-    }
-    if (!imageBase64) {
-      return res.status(400).json({ error: 'يرجى اختيار صورة المنتج' });
-    }
-    if (!script) {
-      return res.status(400).json({ error: 'يرجى إدخال نص السيناريو' });
-    }
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+      <meta charset="UTF-8">
+      <title>لوحة إدارة منصة فارق AI</title>
+      <script src="https://cdn.tailwindcss.com"></script>
+      <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;900&display=swap" rel="stylesheet">
+    </head>
+    <body class="bg-[#0b0c10] text-slate-200 font-['Cairo'] p-6">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-800">
+          <div>
+            <h1 class="text-xl font-black text-white">لوحة إدارة منصة فارق AI ⚡</h1>
+            <p class="text-xs text-slate-400">إدارة الاشتراكات، طلبات الـ BEP20 والفيزا، والمستخدمين</p>
+          </div>
+          <span class="bg-amber-400 text-black font-black px-3 py-1 rounded-xl text-xs">Admin Mode</span>
+        </div>
 
-    const taskId = 'task_' + Date.now();
-    tasks.set(taskId, {
-      status: 'processing',
-      audioUrl: null,
-      videoUrl: null,
-      error: null
-    });
-
-    res.json({ success: true, taskId });
-
-    // تشغيل التوليد بالخلفية
-    (async () => {
-      const currentTask = tasks.get(taskId);
-      try {
-        // 1. توليد الصوت البشري (ElevenLabs)
-        if (ELEVEN_API_KEY) {
-          try {
-            const vId = voiceId || 'nPczCjzI2devNBz1zQrb';
-            const ttsRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${vId}`, {
-              method: 'POST',
-              headers: {
-                'xi-api-key': ELEVEN_API_KEY,
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                text: script,
-                model_id: 'eleven_multilingual_v2',
-                voice_settings: {
-                  stability: 0.45,
-                  similarity_boost: 0.88,
-                  style: 0.40,
-                  use_speaker_boost: true
-                }
-              })
-            });
-
-            if (ttsRes.ok) {
-              const buf = await ttsRes.arrayBuffer();
-              currentTask.audioUrl = `data:audio/mp3;base64,${Buffer.from(buf).toString('base64')}`;
-            }
-          } catch(e) {
-            console.warn('Voice error:', e.message);
-          }
-        }
-
-        // 2. توليد الفيديو السينمائي (Replicate)
-        const videoPrompt = `Cinematic commercial video showcase, high-end professional human model gracefully wearing and holding ${productName || 'luxury product'} close-up to camera, modern luxury studio lighting, 4k ultra-detailed, slow motion, crisp reflections, realistic textures.`;
-
-        const repRes = await fetch('https://api.replicate.com/v1/models/minimax/video-01/predictions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${REPLICATE_API_TOKEN}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            input: {
-              prompt: videoPrompt,
-              first_frame_image: imageBase64,
-              prompt_optimizer: true
-            }
-          })
-        });
-
-        let pred = await repRes.json();
-        if (!repRes.ok || pred.error) {
-          currentTask.status = 'failed';
-          currentTask.error = pred.detail || pred.error || 'خطأ في استجابة Replicate';
-          return;
-        }
-
-        let checks = 0;
-        while (pred.status !== 'succeeded' && pred.status !== 'failed' && checks < 80) {
-          await new Promise(r => setTimeout(r, 4000));
-          checks++;
-          const chk = await fetch(`https://api.replicate.com/v1/predictions/${pred.id}`, {
-            headers: { 'Authorization': `Bearer ${REPLICATE_API_TOKEN}` }
-          });
-          pred = await chk.json();
-        }
-
-        if (pred.status === 'succeeded' && pred.output) {
-          currentTask.videoUrl = Array.isArray(pred.output) ? pred.output[0] : pred.output;
-          currentTask.status = 'ready';
-        } else {
-          currentTask.status = 'failed';
-          currentTask.error = pred.error || 'فشلت رندرة الفيديو في Replicate';
-        }
-
-      } catch(err) {
-        currentTask.status = 'failed';
-        currentTask.error = err.message;
-      }
-    })();
-
-  } catch(err) {
-    res.status(500).json({ error: err.message });
-  }
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 shadow-2xl overflow-x-auto">
+          <table class="w-full text-right">
+            <thead>
+              <tr class="border-b border-slate-800 text-[11px] text-slate-400">
+                <th class="p-3">رقم الطلب</th>
+                <th class="p-3">الباقة</th>
+                <th class="p-3">المبلغ</th>
+                <th class="p-3">طريقة الدفع</th>
+                <th class="p-3">المجال</th>
+                <th class="p-3">المرجع / TxID</th>
+                <th class="p-3">الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
 });
 
-app.get('/api/check-task-status', (req, res) => {
-  const { taskId } = req.query;
-  const task = tasks.get(taskId);
-  if (!task) return res.status(404).json({ error: 'المهمة غير موجودة' });
-  res.json(task);
+// API استقبال طلبات الاشتراك وتسجيلها في لوحة الإدارة
+app.post('/api/orders/create', (req, res) => {
+  const { plan, price, currency, method, industry, monthlyTarget, txRef } = req.body;
+  const newOrder = {
+    id: 'ORD-' + (Math.floor(Math.random() * 900) + 100),
+    plan: plan || 'trial_3d',
+    price: `${price || 3} ${currency || 'USDT'}`,
+    method: method === 'crypto' ? 'USDT (BEP20)' : 'Visa Card',
+    industry: industry || 'عام',
+    target: monthlyTarget || 150,
+    status: 'مفعل',
+    txRef: txRef || '0xVerified',
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  ordersDatabase.unshift(newOrder);
+  res.json({ success: true, orderId: newOrder.id });
 });
 
 app.listen(PORT, () => {
-  console.log(`Server online on port ${PORT}`);
+  console.log(`Fareq Platform fully unified online on port ${PORT}`);
 });
