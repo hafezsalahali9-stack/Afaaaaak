@@ -5,13 +5,20 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// مفتاح D-ID الخاص بحسابك
 const DID_AUTH = process.env.DID_AUTH || "WjI5dloyeGxMVzloZFhSb01ud3hNREF5TlRjd05UZzFNVGN6TVRnMk5EYzNNemhBWVd0ZlFuSkhWWEZKYkVSMU5FUkVXa0ppV0dnek1XODM6YnBzX3hBb0QyUlVTQ3NVVGJTMHJs";
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
 
-// نقطة نهاية توليد فيديو الموديل البشري عبر D-ID
+// تشغيل الملفات من المجلد الرئيسي مباشرة
+app.use(express.static(__dirname));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// استدعاء محرك D-ID الحقيقي لتوليد فيديو الموديل البشري
 app.post('/api/generate-video', async (req, res) => {
   try {
     const { avatarUrl, script, voiceId } = req.body;
@@ -52,18 +59,18 @@ app.post('/api/generate-video', async (req, res) => {
 
     if (!createRes.ok || !createData.id) {
       return res.status(createRes.status).json({ 
-        error: createData.description || createData.message || 'فشل في الاتصال بمحرك D-ID',
+        error: createData.description || createData.message || 'فشل في إنشاء جلسة D-ID',
         details: createData 
       });
     }
 
     const talkId = createData.id;
 
-    // فحص اكتمال المعالجة السحابية
+    // متابعة حالة اكتمال الرندرة
     let videoUrl = null;
     let attempts = 0;
 
-    while (attempts < 20) {
+    while (attempts < 25) {
       await new Promise(r => setTimeout(r, 3000));
       attempts++;
 
@@ -79,12 +86,12 @@ app.post('/api/generate-video', async (req, res) => {
       }
 
       if (pollData.status === 'error') {
-        return res.status(500).json({ error: 'فشلت معالجة الفيديو في سيرفرات D-ID', details: pollData });
+        return res.status(500).json({ error: 'حدث خطأ أثناء معالجة الفيديو في D-ID', details: pollData });
       }
     }
 
     if (!videoUrl) {
-      return res.status(504).json({ error: 'استغرقت الرندرة وقتاً أطول من المتوقع' });
+      return res.status(504).json({ error: 'استغرقت المعالجة وقتاً طويلاً، يرجى المحاولة ثانية' });
     }
 
     return res.json({ success: true, videoUrl });
@@ -94,7 +101,7 @@ app.post('/api/generate-video', async (req, res) => {
   }
 });
 
-// بروكسي التنزيل المباشر لمنع أخطاء الصلاحيات
+// مسار التنزيل المباشر كملف MP4 لحل مشاكل الصلاحيات
 app.get('/api/download-proxy', async (req, res) => {
   try {
     const { url, filename } = req.query;
