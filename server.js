@@ -5,13 +5,9 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const ELEVEN_API_KEY = (process.env.ELEVEN_API_KEY || "sk_12e052a47211e2714c013bba2ecaff4d96510b6d50639430").trim();
-let rawReplicate = (process.env.REPLICATE_API_TOKEN || "r8_GQp5iMKN0YKzck5lLXZ1Of7FdhSSwZP2vCQQg").trim();
-
-if (rawReplicate.startsWith('R8_')) {
-  rawReplicate = 'r8_' + rawReplicate.slice(3);
-}
-const REPLICATE_API_TOKEN = rawReplicate;
+// قراءة المفاتيح بأمان تام من إعدادات السيرفر (Render Environment)
+const ELEVEN_API_KEY = (process.env.ELEVEN_API_KEY || "").trim();
+const REPLICATE_API_TOKEN = (process.env.REPLICATE_API_TOKEN || "").trim();
 
 app.use(cors());
 app.use(express.json({ limit: '50mb' }));
@@ -26,6 +22,9 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
   try {
     const { imageBase64, productName, offer, script, voiceId } = req.body;
 
+    if (!REPLICATE_API_TOKEN) {
+      return res.status(500).json({ error: 'يرجى إضافة REPLICATE_API_TOKEN في إعدادات Environment على Render' });
+    }
     if (!imageBase64) {
       return res.status(400).json({ error: 'يرجى رفع صورة المنتج أولاً.' });
     }
@@ -33,38 +32,37 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
       return res.status(400).json({ error: 'يرجى كتابة نص السيناريو.' });
     }
 
-    console.log(`[1/3] توليد الصوت البشري للمنتج: ${productName}...`);
+    console.log(`[1/3] توليد التعليق الصوتي للمنتج: ${productName}...`);
 
     let audioDataUri = null;
-    try {
-      const selectedVoice = voiceId || '21m00Tcm4TlvDq8ikWAM';
-      const ttsResp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}`, {
-        method: 'POST',
-        headers: {
-          'xi-api-key': ELEVEN_API_KEY,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          text: script,
-          model_id: 'eleven_multilingual_v2',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.85,
-            style: 0.25,
-            use_speaker_boost: true
-          }
-        })
-      });
+    if (ELEVEN_API_KEY) {
+      try {
+        const selectedVoice = voiceId || '21m00Tcm4TlvDq8ikWAM';
+        const ttsResp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${selectedVoice}`, {
+          method: 'POST',
+          headers: {
+            'xi-api-key': ELEVEN_API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            text: script,
+            model_id: 'eleven_multilingual_v2',
+            voice_settings: {
+              stability: 0.5,
+              similarity_boost: 0.85,
+              style: 0.25,
+              use_speaker_boost: true
+            }
+          })
+        });
 
-      if (ttsResp.ok) {
-        const audioBuf = await ttsResp.arrayBuffer();
-        audioDataUri = `data:audio/mp3;base64,${Buffer.from(audioBuf).toString('base64')}`;
-      } else {
-        const errDetail = await ttsResp.json().catch(() => ({}));
-        console.warn('ElevenLabs API warning:', errDetail);
+        if (ttsResp.ok) {
+          const audioBuf = await ttsResp.arrayBuffer();
+          audioDataUri = `data:audio/mp3;base64,${Buffer.from(audioBuf).toString('base64')}`;
+        }
+      } catch (e) {
+        console.warn('TTS Warning:', e.message);
       }
-    } catch (ttsErr) {
-      console.warn('TTS fetch failed:', ttsErr.message);
     }
 
     console.log(`[2/3] إرسال صورة المنتج إلى Replicate...`);
@@ -89,14 +87,13 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
     let prediction = await repResp.json();
     if (!repResp.ok || prediction.error) {
       console.error('Replicate error:', prediction);
-      const errorMsg = prediction.detail || prediction.error || 'خطأ في التحقق من توكن Replicate';
       return res.status(repResp.status || 500).json({
-        error: errorMsg,
+        error: prediction.detail || prediction.error || 'خطأ في استجابة Replicate',
         details: prediction
       });
     }
 
-    console.log(`[3/3] جاري المعالجة (ID: ${prediction.id})...`);
+    console.log(`[3/3] معالجة الرندرة (ID: ${prediction.id})...`);
 
     let attempts = 0;
     while (prediction.status !== 'succeeded' && prediction.status !== 'failed' && attempts < 60) {
@@ -107,7 +104,6 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
         headers: { 'Authorization': `Bearer ${REPLICATE_API_TOKEN}` }
       });
       prediction = await checkResp.json();
-      console.log(`Status attempt ${attempts}: ${prediction.status}`);
     }
 
     if (prediction.status === 'succeeded' && prediction.output) {
@@ -127,7 +123,7 @@ app.post('/api/generate-commercial-ad', async (req, res) => {
     }
 
   } catch (error) {
-    console.error('Master Server Error:', error);
+    console.error('Server Error:', error);
     return res.status(500).json({ error: error.message });
   }
 });
@@ -151,5 +147,5 @@ app.get('/api/download-proxy', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Fareq AI Production Engine online on port ${PORT}`);
+  console.log(`Server online on port ${PORT}`);
 });
